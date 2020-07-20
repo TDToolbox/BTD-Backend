@@ -48,12 +48,7 @@ namespace BTD_Backend
         /// Check if the background thread is in use or not
         /// </summary>
         /// <returns>Whether or not the background thread is in use</returns>
-        public static bool IsThreadRunning()
-        {
-            if (ThreadInstance == null || !ThreadInstance.IsAlive)
-                return false;
-            return true;
-        }
+        public static bool IsThreadRunning() => !(ThreadInstance == null || !ThreadInstance.IsAlive);
 
         /// <summary>
         /// Add a function to the ThreadQueue. It will execute the thread immediately if the thread Instance for this class isn't running
