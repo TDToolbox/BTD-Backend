@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30104.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTD Backend", "BTD Backend.csproj", "{9579A65F-B88D-4A82-AB54-77BB165D57DC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9579A65F-B88D-4A82-AB54-77BB165D57DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9579A65F-B88D-4A82-AB54-77BB165D57DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9579A65F-B88D-4A82-AB54-77BB165D57DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9579A65F-B88D-4A82-AB54-77BB165D57DC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {210B2565-6473-46D9-BBF7-0DE8E7A65A61}
+	EndGlobalSection
+EndGlobal
