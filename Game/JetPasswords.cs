@@ -22,20 +22,23 @@ namespace BTD_Backend.Game
         /// </summary>
         /// <param name="redownload">Wheter or not to redownload the list from github</param>
         /// <returns></returns>
-        public List<string> GetPasswords(bool redownload = false)
+        public static List<string> GetPasswords(bool redownload = false)
         {
+            Log.Output("Getting password list...");
+            JetPassword jet = new JetPassword();
+
             List<string> passwords = new List<string>();
-            if (!PasswordsFileExist() || redownload)
-                passwords = CreatePasswordsList();
+            if (!jet.PasswordsFileExist() || redownload)
+                passwords = jet.CreatePasswordsList();
             else
-                passwords = CreatePasswordsList(File.ReadAllText(passwordsFilePath));
+                passwords = jet.CreatePasswordsList(File.ReadAllText(jet.passwordsFilePath));
 
             JetPasswordEventArgs args = new JetPasswordEventArgs();
             args.PasswordList = passwords;
             if (passwords != null && passwords.Count > 0)
-                OnPasswordListAquired(args);
+                jet.OnPasswordListAquired(args);
             else
-                OnFailedToAquirePasswordList(args);
+                jet.OnFailedToAquirePasswordList(args);
 
             return passwords;
         }
@@ -66,10 +69,11 @@ namespace BTD_Backend.Game
             for (int i = split.Length - 1; i > 0; i--)
             {
                 if (!split[i].Contains("["))
-                    continue;
+                    continue;                
 
                 string[] line = split[i].Split('-');
                 string cleanedLine = line[line.Length - 1].Replace(" ", "");
+
                 result += cleanedLine + "\n";
             }
 
@@ -93,7 +97,12 @@ namespace BTD_Backend.Game
 
             string[] split = cleanedGitText.Split('\n');
             foreach (string line in split)
+            {
+                if (line.Length == 0)
+                    continue;
+
                 passwords.Add(line);
+            }
 
             if (saveList)
                 SavePasswordFile(passwords);
@@ -121,7 +130,7 @@ namespace BTD_Backend.Game
 
         #region Events
 
-        public event EventHandler<JetPasswordEventArgs> AquiredPasswordList;
+        public static event EventHandler<JetPasswordEventArgs> AquiredPasswordList;
         public event EventHandler<JetPasswordEventArgs> FailedToAquirePasswordList;
 
         public class JetPasswordEventArgs : EventArgs
