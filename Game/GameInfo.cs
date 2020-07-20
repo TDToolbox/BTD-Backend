@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BTD_Backend.Game;
+using System.Collections.Generic;
 
 namespace BTD_Backend.Game
 {
@@ -30,7 +31,7 @@ namespace BTD_Backend.Game
         /// The GameType for this specific game. Example: GameType.BTD5
         /// </summary>
         public GameType Type { get; set; }
-        
+
         /// <summary>
         /// The name of the game's exe. Example: "BTD5-Win.exe"
         /// </summary>
@@ -52,7 +53,7 @@ namespace BTD_Backend.Game
         /// Example: Bloons TD5 Game
         /// </summary>
         public string ProcName { get; set; }
-        
+
         /// <summary>
         /// The name of the game's jet file, as seen in it's Assets folder. Example: "BTD5.jet"
         /// </summary>

@@ -105,13 +105,7 @@ namespace BTD_Backend.Game
         /// Check if steam is installed by checking if it's game directory exists
         /// </summary>
         /// <returns>true or false, whether or not steam directory exists</returns>
-        public static bool IsSteamInstalled()
-        {
-            if (GetSteamDir() == null)
-                return false;
-
-            return true;
-        }
+        public static bool IsSteamInstalled() => GetSteamDir() != null;
 
         /// <summary>
         /// Get game directory from steam ID
@@ -125,7 +119,7 @@ namespace BTD_Backend.Game
         /// </summary>
         /// <param name="game">Game to get directory for</param>
         /// <returns>Game directory for game</returns>
-        public static string GetGameDir(GameType game) => GetGameDir(steamGames_appID_fromGame[game]);
+        public static string GetGameDir(GameType gameType) => GetGameDir(steamGames_appID_fromGame[gameType]);
 
         /// <summary>
         /// Get game directory from steam app ID and game name

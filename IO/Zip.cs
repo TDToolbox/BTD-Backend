@@ -153,9 +153,6 @@ namespace BTD_Backend.IO
         /// Use ToString to get the name(path) of the zip object
         /// </summary>
         /// <returns>The name (path) of the current zip object</returns>
-        public override string ToString()
-        {
-            return Archive.Name;
-        }
+        public override string ToString() =>  Archive.Name;
     }
 }
