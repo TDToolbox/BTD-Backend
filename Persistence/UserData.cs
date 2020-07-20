@@ -14,15 +14,16 @@ namespace BTD_Backend.Persistence
     public class UserData
     {
         private static UserData data;
-        public static string MainSettingsDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BTD Toolbox";
-
-        public static string userdataFilePath = MainSettingsDir + "\\userdata.json";
+        public static string MainProgramName { get; set; } = "";
+        public static string MainProgramExePath { get; set; } = "";
+        public static string MainSettingsDir { get; set; } = "";
+        public static string UserDataFilePath { get; set; } = "";
 
 
         /// <summary>
         /// Manages the last known version of the executing program
         /// </summary>
-        public string MainProgramVersion { get; set; } = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+        public string MainProgramVersion { get; set; } = "";
         
         /// <summary>
         /// Has the user just updated the executing program?
@@ -39,59 +40,123 @@ namespace BTD_Backend.Persistence
         /// BTD5 Data
         /// </summary>
         #region BTD5
-        public string BTD5Dir { get; set; } = SteamUtils.GetGameDir(GameType.BTD5);
-        public string BTD5Version { get; set; } = FileIO.GetFileVersion(SteamUtils.GetGameDir(GameType.BTD5) + "\\BTD5-Win.exe");
-        public string BTD5BackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\BTD5";
+        private static GameInfo btd5 = GameInfo.GetGame(GameType.BTD5);
+        public string BTD5Dir { get; set; } = btd5.GameDir;
+        public string BTD5Version { get; set; } = FileIO.GetFileVersion(btd5.GameDir + "\\" + btd5.EXEName);
+        public string BTD5BackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + btd5.Type.ToString();
         #endregion
 
         /// <summary>
         /// BTDB Data
         /// </summary>
         #region BTDB
-        public string BTDBDir { get; set; } = SteamUtils.GetGameDir(GameType.BTDB);
-        public string BTDBVersion { get; set; } = FileIO.GetFileVersion(SteamUtils.GetGameDir(GameType.BTDB) + "\\Battles-Win.exe");
-        public string BTDBBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\BTDB";
+        private static GameInfo btdb = GameInfo.GetGame(GameType.BTDB);
+        public string BTDBDir { get; set; } = btdb.GameDir;
+        public string BTDBVersion { get; set; } = FileIO.GetFileVersion(btdb.GameDir + "\\" + btdb.EXEName);
+        public string BTDBBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + btdb.Type.ToString();
         #endregion
 
         /// <summary>
         /// Bloons Monkey City Data
         /// </summary>
         #region
-        public string BMCDir { get; set; } = SteamUtils.GetGameDir(GameType.BMC);
-        public string BMCVersion { get; set; } = FileIO.GetFileVersion(SteamUtils.GetGameDir(GameType.BMC) + "\\MonkeyCity-Win.exe");
-        public string BMCBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\BMC";
+        private static GameInfo bmc = GameInfo.GetGame(GameType.BMC);
+        public string BMCDir { get; set; } = bmc.GameDir;
+        public string BMCVersion { get; set; } = FileIO.GetFileVersion(bmc.GameDir + "\\" + bmc.EXEName);
+        public string BMCBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + bmc.Type.ToString();
         #endregion
 
         /// <summary>
         /// BTD6 Data
         /// </summary>
-        #region
-        public string BTD6Dir { get; set; } = SteamUtils.GetGameDir(GameType.BTD6);
-        public string BTD6Version { get; set; } = FileIO.GetFileVersion(SteamUtils.GetGameDir(GameType.BTD6) + "\\MonkeyCity-Win.exe");
-        public string BTD6BackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\BTD6";
+        #region BTD6
+        private static GameInfo btd6 = GameInfo.GetGame(GameType.BTD6);
+        public string BTD6Dir { get; set; } = btd6.GameDir;
+        public string BTD6Version { get; set; } = FileIO.GetFileVersion(btd6.GameDir + "\\" + btd6.EXEName);
+        public string BTD6BackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + btd6.Type.ToString();
         #endregion
 
+        /// <summary>
+        /// Bloons Adventure Time Data
+        /// </summary>
+        #region BTDAT
+        private static GameInfo btdat = GameInfo.GetGame(GameType.BTDAT);
+        public string BTDATDir { get; set; } = btdat.GameDir;
+        public string BTDATVersion { get; set; } = FileIO.GetFileVersion(btdat.GameDir + "\\" + btdat.EXEName);
+        public string BTDATBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + btdat.Type.ToString();
+        #endregion
+
+        /// <summary>
+        /// NKArchive Data
+        /// </summary>
+        #region BTDAT
+        private static GameInfo nkArchive = GameInfo.GetGame(GameType.NKArchive);
+        public string NKArchiveDir { get; set; } = nkArchive.GameDir;
+        public string NKArchiveVersion { get; set; } = FileIO.GetFileVersion(nkArchive.GameDir + "\\" + nkArchive.EXEName);
+        public string NKArchiveBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + nkArchive.Type.ToString();
+        #endregion
+
+
+        #region Constructors
+        public UserData()
+        {
+            if (!Guard.IsStringValid(MainProgramName))
+                throw new MainProgramNameNotSet();
+
+            if (!Guard.IsStringValid(MainProgramExePath))
+                throw new MainProgramExePathNotSet();
+
+            if (!Guard.IsStringValid(MainSettingsDir))
+                MainSettingsDir = Environment.CurrentDirectory;
+
+            if (!Guard.IsStringValid(MainProgramVersion))
+                MainProgramVersion = FileVersionInfo.GetVersionInfo(MainProgramExePath).FileVersion;
+
+            if (!Directory.Exists(MainSettingsDir))
+                Directory.CreateDirectory(MainSettingsDir);
+
+            if (!Guard.IsStringValid(UserDataFilePath))
+                UserDataFilePath = MainSettingsDir + "\\userdata.json";
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Open the main settings directory
+        /// </summary>
+        public static void OpenSettingsDir()
+        {
+            if (data == null)
+                data = new UserData();
+
+            if (!Directory.Exists(MainSettingsDir))
+                Directory.CreateDirectory(MainSettingsDir);
+
+            Process.Start(MainSettingsDir);
+        }
+
+        /// <summary>
+        /// Load userdata from file
+        /// </summary>
+        /// <returns>The loaded userdata</returns>
         public static UserData LoadUserData()
         {
-            if (!File.Exists(userdataFilePath))
-            {
-                data = new UserData();
-                return data;
-            }
+            if (!File.Exists(UserDataFilePath))
+                return data = new UserData();
 
-            string json = File.ReadAllText(userdataFilePath);
-
-
+            string json = File.ReadAllText(UserDataFilePath);
             if (json == "null" || !Guard.IsJsonValid(json))
             {
                 Log.Output("Userdata has invalid json, generating a new one.");
-                data = new UserData();
-                return data;
+                return data = new UserData();
             }
-            data = JsonConvert.DeserializeObject<UserData>(json);
-            return data;
+            
+            return data = JsonConvert.DeserializeObject<UserData>(json);
         }
 
+        /// <summary>
+        /// Save userdata to file
+        /// </summary>
         public static void SaveUserData()
         {
             if (data == null)
@@ -99,9 +164,44 @@ namespace BTD_Backend.Persistence
 
             string output = JsonConvert.SerializeObject(data, Formatting.Indented);
 
-            StreamWriter serialize = new StreamWriter(userdataFilePath, false);
+            StreamWriter serialize = new StreamWriter(UserDataFilePath, false);
             serialize.Write(output);
             serialize.Close();
         }
+
+
+        #region Exceptions
+        /// <summary>
+        /// Throw exception if developer forgot to set the MainProgramName property.
+        /// The property needs to be set so userdata can be saved correctly
+        /// </summary>
+        public class MainProgramNameNotSet : Exception
+        {
+            public override string Message
+            {
+                get 
+                {
+                    return "Did not set the MainProjectName property in UserData. Unable " +
+                            "to save user data.";
+                }
+            }
+        }
+
+        /// <summary>
+        /// Throw exception if developer forgot to set the MainProgramExePath property.
+        /// The property needs to be set so the program can save the version number for the executing program
+        /// </summary>
+        public class MainProgramExePathNotSet : Exception
+        {
+            public override string Message
+            {
+                get
+                {
+                    return "Did not set the MainProgramExePath property in UserData. Unable " +
+                            "to get version number of the executing program";
+                }
+            }
+        }
+        #endregion
     }
 }

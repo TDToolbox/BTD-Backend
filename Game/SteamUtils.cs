@@ -27,7 +27,7 @@ namespace BTD_Backend.Game
         public const string BTDATName = "Bloons Adventure Time TD";
 
         public const UInt64 NKArchiveAppID = 1275350;
-        public const string NKArchiveName = "NK Archive";
+        public const string NKArchiveName = "Ninja Kiwi Archive";
 
         private static Dictionary<UInt64, string> steamGames = new Dictionary<UInt64, string>
         {{BTD5AppID, BTD5Name}, {BTDBAppID, BTDBName}, {BMCAppID, BMCName}, {BTD6AppID, BTD6Name},
