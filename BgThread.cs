@@ -158,10 +158,10 @@ namespace BTD_Backend
 
 
         #region Events
-        public event EventHandler<ThreadingEventArgs> ThreadQueueFinished;
-        public event EventHandler<ThreadingEventArgs> ThreadQueueStarted;
-        public event EventHandler<ThreadingEventArgs> ThreadQueueItemAdded;
-        public event EventHandler<ThreadingEventArgs> ThreadQueueItemRemoved;
+        public static event EventHandler<ThreadingEventArgs> ThreadQueueFinished;
+        public static event EventHandler<ThreadingEventArgs> ThreadQueueStarted;
+        public static event EventHandler<ThreadingEventArgs> ThreadQueueItemAdded;
+        public static event EventHandler<ThreadingEventArgs> ThreadQueueItemRemoved;
 
         public class ThreadingEventArgs : EventArgs
         {

@@ -131,7 +131,7 @@ namespace BTD_Backend.Game
         #region Events
 
         public static event EventHandler<JetPasswordEventArgs> AquiredPasswordList;
-        public event EventHandler<JetPasswordEventArgs> FailedToAquirePasswordList;
+        public static event EventHandler<JetPasswordEventArgs> FailedToAquirePasswordList;
 
         public class JetPasswordEventArgs : EventArgs
         {

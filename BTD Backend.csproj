@@ -48,9 +48,11 @@
     <Compile Include="Game\SteamUtils.cs" />
     <Compile Include="Guard.cs" />
     <Compile Include="Game\JetPasswords.cs" />
+    <Compile Include="IO\Windows.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Persistence\UserData.cs" />
     <Compile Include="IO\Zip.cs" />
+    <Compile Include="Uninstaller.cs" />
     <Compile Include="Web\GitApi.cs" />
     <Compile Include="Web\UpdateHandler.cs" />
     <Compile Include="Web\WebHandler.cs" />

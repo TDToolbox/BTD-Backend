@@ -91,7 +91,7 @@ namespace BTD_Backend.Game
                 EXEName = "BTD5-Win.exe",
                 GameDir = SteamUtils.GetGameDir(GameType.BTD5),
                 SaveDir = "",
-                ProcName = "Bloons TD5 Game",
+                ProcName = "BTD5-Win",
                 JetName = "BTD5.jet",
                 JetPassword = "Q%_{6#Px]]"
             };
@@ -102,7 +102,7 @@ namespace BTD_Backend.Game
                 EXEName = "Battles-Win.exe",
                 GameDir = SteamUtils.GetGameDir(GameType.BTDB),
                 SaveDir = "",
-                ProcName = "Bloons TD Battles",
+                ProcName = "Battles-Win",
                 JetName = "data.jet",
                 JetPassword = ""
             };
@@ -113,7 +113,7 @@ namespace BTD_Backend.Game
                 EXEName = "MonkeyCity-Win.exe",
                 GameDir = SteamUtils.GetGameDir(GameType.BMC),
                 SaveDir = "",
-                ProcName = "Bloons Monkey City Game (32 bit)",
+                ProcName = "MonkeyCity-Win",
                 JetName = "data.jet",
                 JetPassword = "Q%_{6#Px]]"
             };
@@ -124,7 +124,7 @@ namespace BTD_Backend.Game
                 EXEName = "BloonsTD6.exe",
                 GameDir = SteamUtils.GetGameDir(GameType.BTD6),
                 SaveDir = "",
-                ProcName = "BloonsTD6.exe",
+                ProcName = "BloonsTD6",
                 JetName = "",
                 JetPassword = ""
             };
@@ -135,7 +135,7 @@ namespace BTD_Backend.Game
                 EXEName = "btdadventuretime.exe",
                 GameDir = SteamUtils.GetGameDir(GameType.BTDAT),
                 SaveDir = "",
-                ProcName = "btdadventuretime.exe",
+                ProcName = "btdadventuretime",
                 JetName = "",
                 JetPassword = ""
             };

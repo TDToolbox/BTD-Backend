@@ -1,6 +1,8 @@
-﻿using Microsoft.Win32;
+﻿using BTD_Backend.IO;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -11,30 +13,30 @@ namespace BTD_Backend.Game
     /// </summary>
     public class SteamUtils
     {
-        public const UInt64 BTD5AppID = 306020;
-        public const string BTD5Name = "BloonsTD5";
-
-        public const UInt64 BTDBAppID = 444640;
-        public const string BTDBName = "Bloons TD Battles";
-
-        public const UInt64 BMCAppID = 1252780;
-        public const string BMCName = "Bloons Monkey City";
-
-        public const UInt64 BTD6AppID = 960090;
-        public const string BTD6Name = "BloonsTD6";
-
-        public const UInt64 BTDATAppID = 979060;
-        public const string BTDATName = "Bloons Adventure Time TD";
-
-        public const UInt64 NKArchiveAppID = 1275350;
-        public const string NKArchiveName = "Ninja Kiwi Archive";
+        private const UInt64 BTD5AppID = 306020;
+        private const string BTD5Name = "BloonsTD5";
+        
+        private const UInt64 BTDBAppID = 444640;
+        private const string BTDBName = "Bloons TD Battles";
+        
+        private const UInt64 BMCAppID = 1252780;
+        private const string BMCName = "Bloons Monkey City";
+        
+        private const UInt64 BTD6AppID = 960090;
+        private const string BTD6Name = "BloonsTD6";
+        
+        private const UInt64 BTDATAppID = 979060;
+        private const string BTDATName = "Bloons Adventure Time TD";
+        
+        private const UInt64 NKArchiveAppID = 1275350;
+        private const string NKArchiveName = "Ninja Kiwi Archive";
 
         private static Dictionary<UInt64, string> steamGames = new Dictionary<UInt64, string>
         {{BTD5AppID, BTD5Name}, {BTDBAppID, BTDBName}, {BMCAppID, BMCName}, {BTD6AppID, BTD6Name},
             {BTDATAppID, BTDATName}, {NKArchiveAppID, NKArchiveName}};
 
         private static Dictionary<GameType, UInt64> steamGames_appID_fromGame = new Dictionary<GameType, UInt64>
-        {{GameType.BTD5, BTD5AppID}, {GameType.BTDB, BTDBAppID}, {GameType.BMC, BMCAppID}, {GameType.BTD6, BTD6AppID}, 
+        {{GameType.BTD5, BTD5AppID}, {GameType.BTDB, BTDBAppID}, {GameType.BMC, BMCAppID}, {GameType.BTD6, BTD6AppID},
             {GameType.BTDAT, BTDATAppID}, {GameType.NKArchive, NKArchiveAppID}};
 
         /// <summary>
@@ -136,9 +138,6 @@ namespace BTD_Backend.Game
                 return null;
             }
 
-            //
-            // Check if game is installed first
-            //
             if (!IsGameInstalled(appid))
             {
                 Log.Output(gameName + " is not installed!");
@@ -147,8 +146,6 @@ namespace BTD_Backend.Game
 
             //
             // Get game Directory...
-            //
-
             string configFileDir = steamDir + "\\steamapps\\libraryfolders.vdf";
             List<string> SteamLibDirs = new List<string>();
             SteamLibDirs.Add(Utils.UnixToWindowsPath(steamDir)); // This steam Directory is always here.
@@ -188,5 +185,54 @@ namespace BTD_Backend.Game
             Log.Output(gameName + "'s Directory not found!");
             return null;
         }
+
+        public static void ValidateGame(GameType gameType)
+        {
+            var utils = new SteamUtils();
+            var args = new SteamUtilsEventArgs();
+            args.Game = gameType;
+
+            if (!IsGameInstalled(gameType))
+            {
+                Log.Output("Failed to validate " + gameType + ". Failed to find game directory through steam.");
+                utils.OnFailedToValidateGame(args);
+                return;
+            }
+
+            if (IsGameRunning(gameType))
+                Windows.TerminateProcess(GameInfo.GetGame(gameType).ProcName);
+
+            var appID = steamGames_appID_fromGame[gameType];
+
+
+
+            
+            utils.OnGameFinishedValidating(args);
+        }
+
+
+        #region Events
+        public static event EventHandler<SteamUtilsEventArgs> GameFinishedValidating;
+        public static event EventHandler<SteamUtilsEventArgs> FailedToValidateGame;
+
+        public class SteamUtilsEventArgs : EventArgs
+        {
+            public GameType Game { get; set; }
+        }
+
+        public void OnGameFinishedValidating(SteamUtilsEventArgs e)
+        {
+            EventHandler<SteamUtilsEventArgs> handler = GameFinishedValidating;
+            if (handler != null)
+                handler(this, e);
+        }
+
+        public void OnFailedToValidateGame(SteamUtilsEventArgs e)
+        {
+            EventHandler<SteamUtilsEventArgs> handler = FailedToValidateGame;
+            if (handler != null)
+                handler(this, e);
+        }
+        #endregion
     }
 }
