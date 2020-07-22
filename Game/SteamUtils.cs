@@ -186,6 +186,10 @@ namespace BTD_Backend.Game
             return null;
         }
 
+        /// <summary>
+        /// Use steam validator to validate the game
+        /// </summary>
+        /// <param name="gameType"></param>
         public static void ValidateGame(GameType gameType)
         {
             var utils = new SteamUtils();
@@ -203,11 +207,11 @@ namespace BTD_Backend.Game
                 Windows.TerminateProcess(GameInfo.GetGame(gameType).ProcName);
 
             var appID = steamGames_appID_fromGame[gameType];
-
+            Process.Start("steam://validate/" + appID);
 
 
             
-            utils.OnGameFinishedValidating(args);
+            //utils.OnGameFinishedValidating(args);
         }
 
 
