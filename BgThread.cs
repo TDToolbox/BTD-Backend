@@ -41,6 +41,22 @@ namespace BTD_Backend
         /// A queue of threads that need to be ran
         /// </summary>
         public static Queue<Thread> ThreadQueue { get; private set; }
+
+        /// <summary>
+        /// A queue of threads that need to be ran. Used as a temp queue for adding threads to the front of the queue.
+        /// </summary>
+        private static Queue<Thread> addToFrontThreadQueue;
+
+        private static Queue<Thread> AddToFrontThreadQueue
+        {
+            get
+            {
+                if (addToFrontThreadQueue == null)
+                    addToFrontThreadQueue = new Queue<Thread>();
+                return addToFrontThreadQueue;
+            }
+            set { addToFrontThreadQueue = value; }
+        }
         #endregion
 
 
@@ -54,7 +70,7 @@ namespace BTD_Backend
         /// Add a function to the ThreadQueue. It will execute the thread immediately if the thread Instance for this class isn't running
         /// </summary>
         /// <param name="func">The function to be added to the TheadQueue and run as a thread</param>
-        public static void AddToQueue(funcDelegate func) => AddToQueue(new Thread(() => func()));
+        public static void AddToQueue(funcDelegate func, bool join = false) => AddToQueue(new Thread(() => func()), join);
 
         /// <summary>
         /// Add a thread to the ThreadQueue. It will execute the thread immediately if the thread Instance for this class isn't running
@@ -91,11 +107,45 @@ namespace BTD_Backend
                 AddToQueue(thread, join);
         }
 
+        public static void AddToFrontOfQueue(funcDelegate func) => AddToFrontOfQueue(new Thread(() => func()));
+
+        public static void AddToFrontOfQueue(Thread thread)
+        {
+            if (AddToFrontThreadQueue == null)
+                AddToFrontThreadQueue = new Queue<Thread>();
+
+            var tempQueue = new Queue<Thread>();
+            tempQueue = AddToFrontThreadQueue;
+
+            AddToFrontThreadQueue = new Queue<Thread>();
+            AddToFrontThreadQueue.Enqueue(thread);
+
+            foreach (var tempT in tempQueue)
+                AddToFrontThreadQueue.Enqueue(tempT);
+
+
+            /*foreach (var t in ThreadQueue)
+                AddToFrontThreadQueue.Enqueue(t);*/
+        }
+
         /// <summary>
         /// Run the first thread in the ThreadQueue
         /// </summary>
         private void RunThread(bool nullifyThreadInst = false)
         {
+            /*if (AddToFrontThreadQueue.Count > 0)
+            {
+                foreach (var item in AddToFrontThreadQueue)
+                {
+                    ThreadQueue.Enqueue(item);
+                }
+            }*/
+
+            /*for (int i = ThreadQueue.Count; i < length; i++)
+            {
+
+            }
+*/
             ThreadQueue.Peek().IsBackground = true;
             ThreadQueue.Peek().Start();
             ThreadQueue.Peek().Join();
@@ -105,6 +155,13 @@ namespace BTD_Backend
 
             ThreadQueue.Dequeue();
             ItemRemovedFromThreadQueue(removeArgs);
+
+            
+
+           /* if (AddToFrontThreadQueue.Count > 0)
+                AddToFrontThreadQueue.Dequeue();*/
+
+
 
             if (nullifyThreadInst)
                 ThreadInstance = null;

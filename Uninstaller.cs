@@ -1,6 +1,8 @@
-﻿using BTD_Backend.Persistence;
+﻿using BTD_Backend.IO;
+using BTD_Backend.Persistence;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,18 +15,19 @@ namespace BTD_Backend
     /// </summary>
     public class Uninstaller
     {
-        public static void Uninstall(bool deleteUserFiles = false)
+        public static void UninstallMainProgram(bool deleteUserFiles = false)
         {
             if (deleteUserFiles)
             {
                 if (Directory.Exists(UserData.MainSettingsDir))
-                    Directory.Delete(UserData.MainSettingsDir);
+                    Directory.Delete(UserData.MainSettingsDir, true);
             }
-        }
 
-        private void LaunchUninstaller()
-        {
+            Windows.DeleteDirCMD(Environment.CurrentDirectory);
 
+            /*var filename = new FileInfo(UserData.MainProgramExePath);
+            if (Windows.IsProgramRunning(filename, out Process proc))
+                Windows.KillProcess(filename);*/
         }
     }
 }

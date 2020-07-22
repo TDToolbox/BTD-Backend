@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 
@@ -12,6 +13,35 @@ namespace BTD_Backend.IO
     public class Windows
     {
         /// <summary>
+        /// Run a command with command prompt
+        /// </summary>
+        /// <param name="command">The command to run in the command prompt</param>
+        public static void ExecuteCmdCommand(string command)
+        {
+            Process p = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = @"/c " + command; // cmd.exe spesific implementation
+            p.StartInfo = startInfo;
+            p.Start();
+        }
+
+        /// <summary>
+        /// Delete a directory with command prompt
+        /// </summary>
+        /// <param name="dir">The directory you want to delete</param>
+        public static void DeleteDirCMD(string dir) => ExecuteCmdCommand("rmdir /Q /S " + dir.Replace("\\",@"\"));
+
+        /// <summary>
+        /// Used for searching for processes. 
+        /// </summary>
+        public enum ProcType
+        {
+            ProcessName,
+            WindowTitle
+        }
+
+        /// <summary>
         /// Close process if it's opened
         /// </summary>
         /// <param name="procID">The ID of the process you are trying to close</param>
@@ -21,24 +51,20 @@ namespace BTD_Backend.IO
             args.ProcessID = procID;
             var process = GetProcess(procID);
 
-            if (process == null)
-            {
-                new Windows().OnFailedToCloseProc(args);
-                return;
-            }
-
-            process.Kill();
-            new Windows().OnProcessClosed(args);
+            KillProcess(process, args);
         }
 
-
         /// <summary>
-        /// Used for searching for processes. 
+        /// Close process if it's opened
         /// </summary>
-        public enum ProcType
+        /// <param name="file">The ID of the process you are trying to close</param>
+        public static void KillProcess(FileInfo file)
         {
-            ProcessName,
-            WindowTitle
+            var args = new WindowsEventArgs();
+            args.File = file;
+            var process = GetProcess(file);
+
+            KillProcess(process, args);
         }
 
         /// <summary>
@@ -57,6 +83,16 @@ namespace BTD_Backend.IO
             else
                 args.ProcessWindowTitle = name;
 
+            KillProcess(process, args);
+        }
+
+        /// <summary>
+        /// Close process if it's opened
+        /// </summary>
+        /// <param name="process">Process to close</param>
+        /// <param name="args">Event args that are called if the process closes successfully or fails</param>
+        public static void KillProcess(Process process, WindowsEventArgs args = null)
+        {
             if (process == null)
             {
                 new Windows().OnFailedToCloseProc(args);
@@ -85,6 +121,21 @@ namespace BTD_Backend.IO
         /// <summary>
         /// Get Process from running processes
         /// </summary>
+        /// <param name="file">The file you want to check to see if running</param>
+        /// <returns>The process that was found, or null if not found</returns>
+        public static Process GetProcess(FileInfo file)
+        {
+            var processes = Process.GetProcesses();
+            foreach (var process in processes)
+                if (process.ProcessName == file.Name.Replace(".exe",""))
+                    return process;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get Process from running processes
+        /// </summary>
         /// <param name="type">The part of the process you are searching for, as in ProcessName, ProcessID, WindowTitle.
         /// <param name="name">The name of the process you are searching for.</param>
         /// <returns>The process that was found, or null if not found</returns>
@@ -105,6 +156,18 @@ namespace BTD_Backend.IO
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Check if a process is running
+        /// </summary>
+        /// <param name="file">The FileInfo of the file you want to see if running.</param>
+        /// <param name="process">The process that was found. Returns null if process is not found</param>
+        /// <returns>True or false, whether or not the process is running</returns>
+        public static bool IsProgramRunning(FileInfo file, out Process process)
+        {
+            process = GetProcess(file);
+            return process != null;
         }
 
         /// <summary>
@@ -155,6 +218,11 @@ namespace BTD_Backend.IO
             /// Process ID of the process you are looking for/attempting to close
             /// </summary>
             public int ProcessID { get; set; }
+
+            /// <summary>
+            /// FileInfo for the file you are looking for/attempting to close
+            /// </summary>
+            public FileInfo File { get; set; }
 
         }
 

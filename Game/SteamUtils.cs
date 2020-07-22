@@ -68,10 +68,8 @@ namespace BTD_Backend.Game
         {
             int isGameRunning = (int)Registry.GetValue(Registry.CurrentUser +
                 "\\Software\\Valve\\Steam\\Apps\\" + appid, "Running", null);
-            if (isGameRunning == 1) // Cant type true because its of type System.Bool.
-                return true;
 
-            return false;
+            return isGameRunning == 1; // Cant type true because its of type System.Bool. If 1 then program is running
         }
 
         /// <summary>
@@ -90,10 +88,8 @@ namespace BTD_Backend.Game
         {
             int isGameInstalled = (int)Registry.GetValue(Registry.CurrentUser +
                 "\\Software\\Valve\\Steam\\Apps\\" + appid, "Installed", null);
-            if (isGameInstalled != 1)
-                return false;
-
-            return true;
+            
+            return isGameInstalled == 1; //If 1 then program is installed
         }
 
         /// <summary>
@@ -193,6 +189,16 @@ namespace BTD_Backend.Game
         public static void ValidateGame(GameType gameType)
         {
             var utils = new SteamUtils();
+            utils.StartValidator(gameType);
+
+
+            
+            //utils.OnGameFinishedValidating(args);
+        }
+
+        private void StartValidator(GameType gameType)
+        {
+            var utils = new SteamUtils();
             var args = new SteamUtilsEventArgs();
             args.Game = gameType;
 
@@ -204,14 +210,10 @@ namespace BTD_Backend.Game
             }
 
             if (IsGameRunning(gameType))
-                Windows.TerminateProcess(GameInfo.GetGame(gameType).ProcName);
+                Windows.KillProcess(GameInfo.GetGame(gameType).ProcName);
 
             var appID = steamGames_appID_fromGame[gameType];
             Process.Start("steam://validate/" + appID);
-
-
-            
-            //utils.OnGameFinishedValidating(args);
         }
 
 

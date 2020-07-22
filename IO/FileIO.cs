@@ -31,6 +31,33 @@ namespace BTD_Backend.IO
         }
 
         /// <summary>
+        /// Copy a directory and all of its contents, while preserving file structure
+        /// </summary>
+        /// <param name="source">The directory you want to copy</param>
+        /// <param name="dest">Where you want to copy the directory to</param>
+        /// <param name="deleteSource">Delete the source directory after copying?</param>
+        public static void CopyWholeDir(string source, string dest, bool deleteSource = false)
+        {
+            if (!Directory.Exists(source))
+            {
+                Log.Output("Failed to copy the directory: \"" + source + " \"  to  \"" + dest + "\" . Source doesn't exist");
+                return;
+            }
+
+            DirectoryInfo destInfo = new DirectoryInfo(dest);
+            foreach (string dirPath in Directory.GetDirectories(source, "*", SearchOption.AllDirectories))
+                Directory.CreateDirectory(dirPath.Replace(source, dest));
+
+            foreach (string newPath in Directory.GetFiles(source, "*.*", SearchOption.AllDirectories))
+                File.Copy(newPath, newPath.Replace(source, dest), true);
+
+            if (deleteSource == true)
+                Directory.Delete(source);
+
+            Log.Output("Copied " + destInfo.Name + "!");
+        }
+
+        /// <summary>
         /// Get file version number for exe
         /// </summary>
         /// <param name="file">Fileinfo you want the version number for</param>
