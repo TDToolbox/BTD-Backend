@@ -122,10 +122,6 @@ namespace BTD_Backend
 
             foreach (var tempT in tempQueue)
                 AddToFrontThreadQueue.Enqueue(tempT);
-
-
-            /*foreach (var t in ThreadQueue)
-                AddToFrontThreadQueue.Enqueue(t);*/
         }
 
         /// <summary>
@@ -133,20 +129,9 @@ namespace BTD_Backend
         /// </summary>
         private void RunThread(bool nullifyThreadInst = false)
         {
-            /*if (AddToFrontThreadQueue.Count > 0)
-            {
-                foreach (var item in AddToFrontThreadQueue)
-                {
-                    ThreadQueue.Enqueue(item);
-                }
-            }*/
+            /*if (ThreadQueue == null)
+                return;*/
 
-            /*for (int i = ThreadQueue.Count; i < length; i++)
-            {
-
-            }
-*/
-            ThreadQueue.Peek().IsBackground = true;
             ThreadQueue.Peek().Start();
             ThreadQueue.Peek().Join();
 
@@ -155,16 +140,6 @@ namespace BTD_Backend
 
             ThreadQueue.Dequeue();
             ItemRemovedFromThreadQueue(removeArgs);
-
-            
-
-           /* if (AddToFrontThreadQueue.Count > 0)
-                AddToFrontThreadQueue.Dequeue();*/
-
-
-
-            if (nullifyThreadInst)
-                ThreadInstance = null;
         }
 
         /// <summary>
@@ -192,8 +167,6 @@ namespace BTD_Backend
             ThreadInstance.Start();
             if (join)
                 ThreadInstance.Join();
-
-            ThreadInstance = null;
         }
 
         /// <summary>
