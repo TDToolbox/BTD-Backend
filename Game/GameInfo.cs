@@ -9,10 +9,11 @@ namespace BTD_Backend.Game
     public class GameInfo
     {
         #region Properties
+        
+        private static List<GameInfo> games;
         /// <summary>
         /// A singleton list containing all of the games, each with their relevant info
         /// </summary>
-        private static List<GameInfo> games;
         public static List<GameInfo> Games
         {
             get 

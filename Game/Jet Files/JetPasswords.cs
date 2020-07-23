@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace BTD_Backend.Game
+namespace BTD_Backend.Game.Jet_Files
 {
     /// <summary>
     /// Manages methods related to obtaining the password for jet files
@@ -15,7 +15,12 @@ namespace BTD_Backend.Game
         /// Where to save the jet passwords retrieved from github
         /// </summary>
         public string passwordsFilePath = UserData.MainSettingsDir + "\\passwords.txt";
+        
+        /// <summary>
+        /// The github url to the passwords list
+        /// </summary>
         public string passwordFileURL = "https://raw.githubusercontent.com/TDToolbox/BTDToolbox-2019_LiveFIles/master/BTD%20Battles%20Passwords";
+
 
         /// <summary>
         /// Get Password List from file or from github. If downloaded from github it will save that new list to file
@@ -130,11 +135,25 @@ namespace BTD_Backend.Game
 
         #region Events
 
+        /// <summary>
+        /// Event is fired when the password list is successfully aquired
+        /// </summary>
         public static event EventHandler<JetPasswordEventArgs> AquiredPasswordList;
+        
+        /// <summary>
+        /// Event is fired when the password list failed to be aquired
+        /// </summary>
         public static event EventHandler<JetPasswordEventArgs> FailedToAquirePasswordList;
 
+
+        /// <summary>
+        /// Events related to JetPasswords
+        /// </summary>
         public class JetPasswordEventArgs : EventArgs
         {
+            /// <summary>
+            /// The password list that was aquired during GetPasswords()
+            /// </summary>
             public List<string> PasswordList { get; set; }
         }
 

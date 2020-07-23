@@ -196,6 +196,10 @@ namespace BTD_Backend.Game
             //utils.OnGameFinishedValidating(args);
         }
 
+        /// <summary>
+        /// Initialize the Steam validator for the specified game
+        /// </summary>
+        /// <param name="gameType">THe game to start validating</param>
         private void StartValidator(GameType gameType)
         {
             var utils = new SteamUtils();
@@ -218,14 +222,28 @@ namespace BTD_Backend.Game
 
 
         #region Events
+        /// <summary>
+        /// Event is fired when game has finished being validated
+        /// </summary>
         public static event EventHandler<SteamUtilsEventArgs> GameFinishedValidating;
+        
+        /// <summary>
+        /// Event is fired when the game failed to be validated
+        /// </summary>
         public static event EventHandler<SteamUtilsEventArgs> FailedToValidateGame;
 
+        /// <summary>
+        /// Events related to the SteamUtils class and it's methods
+        /// </summary>
         public class SteamUtilsEventArgs : EventArgs
         {
             public GameType Game { get; set; }
         }
 
+        /// <summary>
+        /// Handling for GameFinishedValidating event
+        /// </summary>
+        /// <param name="e">Takes the GameType that finished validating as an Arg</param>
         public void OnGameFinishedValidating(SteamUtilsEventArgs e)
         {
             EventHandler<SteamUtilsEventArgs> handler = GameFinishedValidating;
@@ -233,6 +251,10 @@ namespace BTD_Backend.Game
                 handler(this, e);
         }
 
+        /// <summary>
+        /// Handling for FailedToValidateGame event
+        /// </summary>
+        /// <param name="e">Takes the GameType that failed to validate as an Arg</param>
         public void OnFailedToValidateGame(SteamUtilsEventArgs e)
         {
             EventHandler<SteamUtilsEventArgs> handler = FailedToValidateGame;

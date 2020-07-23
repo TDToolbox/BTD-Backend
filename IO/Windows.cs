@@ -33,15 +33,6 @@ namespace BTD_Backend.IO
         public static void DeleteDirCMD(string dir) => ExecuteCmdCommand("rmdir /Q /S " + dir.Replace("\\",@"\"));
 
         /// <summary>
-        /// Used for searching for processes. 
-        /// </summary>
-        public enum ProcType
-        {
-            ProcessName,
-            WindowTitle
-        }
-
-        /// <summary>
         /// Close process if it's opened
         /// </summary>
         /// <param name="procID">The ID of the process you are trying to close</param>
@@ -199,9 +190,21 @@ namespace BTD_Backend.IO
 
 
         #region Events
+        
+        /// <summary>
+        /// Event fired when a program is closed
+        /// </summary>
         public static event EventHandler<WindowsEventArgs> ProcessClosed;
+
+        /// <summary>
+        /// Event fired when a program failed to be closed
+        /// </summary>
         public static event EventHandler<WindowsEventArgs> FailedToCloseProc;
 
+
+        /// <summary>
+        /// Events related to WindowsEvents
+        /// </summary>
         public class WindowsEventArgs : EventArgs
         {
             /// <summary>

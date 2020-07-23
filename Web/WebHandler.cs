@@ -36,6 +36,11 @@ namespace BTD_Backend.Web
             if (File.Exists(dest))
                 File.Delete(dest);
 
+            FileInfo f = new FileInfo(dest);
+            var destDir = f.FullName.Replace(f.Name, "");
+            if (!Directory.Exists(destDir))
+                Directory.CreateDirectory(destDir);
+
             File.Move(tempDest, dest);
             Directory.Delete(tempDir, true);
         }

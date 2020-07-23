@@ -11,7 +11,7 @@ namespace BTD_Backend
         /// </summary>
         /// <param name="text">String to check</param>
         /// <returns>bool whether or not string is valid</returns>
-        public static bool IsStringValid(string text) => text != "" && text != null;
+        public static bool IsStringValid(string text) => !String.IsNullOrEmpty(text);
 
         /// <summary>
         /// Check if url is valid/exists
@@ -43,9 +43,6 @@ namespace BTD_Backend
         /// <returns>Whether or not text is valid json</returns>
         public static bool IsJsonValid(string text)
         {
-            if (!IsStringValid(text))
-                return false;
-
             try
             {
                 var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();

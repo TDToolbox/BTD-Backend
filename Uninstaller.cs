@@ -15,6 +15,10 @@ namespace BTD_Backend
     /// </summary>
     public class Uninstaller
     {
+        /// <summary>
+        /// Uninstall the main/executing program that is using BTD Backend
+        /// </summary>
+        /// <param name="deleteUserFiles"></param>
         public static void UninstallMainProgram(bool deleteUserFiles = false)
         {
             if (deleteUserFiles)
@@ -25,9 +29,9 @@ namespace BTD_Backend
 
             Windows.DeleteDirCMD(Environment.CurrentDirectory);
 
-            /*var filename = new FileInfo(UserData.MainProgramExePath);
+            var filename = new FileInfo(UserData.MainProgramExePath);
             if (Windows.IsProgramRunning(filename, out Process proc))
-                Windows.KillProcess(filename);*/
+                Windows.KillProcess(filename);
         }
     }
 }

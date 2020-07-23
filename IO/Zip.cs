@@ -1,4 +1,5 @@
-﻿using Ionic.Zip;
+﻿using BTD_Backend.Game.Jet_Files;
+using Ionic.Zip;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,6 +36,8 @@ namespace BTD_Backend.IO
         public Zip()
         {
             this.Archive = new ZipFile();
+            this.Archive.Encryption = EncryptionAlgorithm.PkzipWeak;
+            this.Archive.CompressionLevel = Ionic.Zlib.CompressionLevel.BestSpeed;
         }
 
         /// <summary>
@@ -68,26 +71,17 @@ namespace BTD_Backend.IO
                 Log.Output("ERROR! Tried to extract \"" + ToString() + "\" and failed. Can't extract the file because the password is incorrect");
         }
 
-
-        //might remove this
-        public void Extract(ZipEntry entry, string dest, ExtractExistingFileAction overwriteExistingFile = ExtractExistingFileAction.OverwriteSilently)
-        {
-            if (IsPasswordCorrect())
-                entry.Extract(dest, overwriteExistingFile);
-            else
-                Log.Output("ERROR! Tried to extract \"" + entry.FileName + "\" and failed. Can't extract the file because the password is incorrect");
-        }
-
         #region IsPasswordCorrect methods
 
         /// <summary>
-        /// Check if the password associated with this object is correct
+        /// Check if the password associated with this object is correct. 
+        /// Uses the Password property of this class to check the Archive of this class
         /// </summary>
         /// <returns>Whether or not the password is correct for the zip</returns>
         public bool IsPasswordCorrect() => IsPasswordCorrect(Archive, Password);
 
         /// <summary>
-        /// Check if string is correct password
+        /// Check if string is correct password for the Archive of this class
         /// </summary>
         /// <param name="password">The text to check if valid password</param>
         /// <returns>Whether or not the password is correct for the zip</returns>
@@ -143,10 +137,93 @@ namespace BTD_Backend.IO
         #endregion
 
 
-        //might move this somewhere else
+
+        #region JetReading
+        
+        /// <summary>
+        /// Reads the text from a file within the ZipFile "Archive" that the class creates by default
+        /// </summary>
+        /// <param name="filePathInZip">The path inside the zip to the file you want to read from</param>
+        /// <returns>The text contained within the file at filePathInZip</returns>
+        public string ReadFileInZip(string filePathInZip) => ReadFileInZip(this.Archive, filePathInZip, this.Password);
+
+        /// <summary>
+        /// Reads the text from a file in the ZipFile "Archive" that the class creates by default
+        /// </summary>
+        /// <param name="path">The path to the zip file you want to read from</param>
+        /// <param name="filePathInZip">The path inside the zip to the file you want to read from</param>
+        /// <param name="password">The password to the zip</param>
+        /// <returns>The text contained within the file at filePathInZip</returns>
+        public static string ReadFileInZip(string path, string filePathInZip, string password)
+        {
+            if (!File.Exists(path))
+            {
+                Log.Output("Error! Can't get Jet password for \"" + path + "\" . That file does not exist!");
+                return null;
+            }
+            return ReadFileInZip(new ZipFile(path), filePathInZip, password);
+        }
+
+        /// <summary>
+        /// Reads the text from a file in the ZipFile "Archive" that the class creates by default
+        /// </summary>
+        /// <param name="zipFile">The ZipFile you want to read from</param>
+        /// <param name="filePathInZip">The path inside the zip to the file you want to read from</param>
+        /// <param name="password">The password to the zip</param>
+        /// <returns>The text contained within the file at filePathInZip</returns>
+        public static string ReadFileInZip(ZipFile zipFile, string filePathInZip, string password)
+        {
+            if (!zipFile.ContainsEntry(filePathInZip))
+            {
+                Log.Output("Not found! Failed to read file in zip\n\nZip: " + zipFile.Name + "\n\nFailed to read file at: " + filePathInZip);
+                return null;
+            }
+
+            string returnText = "";
+            foreach (var entry in zipFile.Entries)
+            {
+                if (!entry.FileName.Replace("\\", "/").Contains(filePathInZip))
+                    continue;
+
+                Stream s;
+                if (!Guard.IsStringValid(password))
+                    s = entry.OpenReader();
+                else
+                {
+                    if (!IsPasswordCorrect(zipFile, password))
+                    {
+                        Log.Output("Error! Password is not correct for Jet file. Trying to find password");
+                        var result = JetHandler.FindJetPassword(zipFile);
+                        if (String.IsNullOrEmpty(result))
+                        {
+                            Log.Output("Failed to find password. Unable to continue...");
+                            return null;
+                        }
+                        password = result;
+                    }
+                    entry.Password = password;
+                    s = entry.OpenReader(password);
+                }
+
+                StreamReader sr = new StreamReader(s);
+                returnText = sr.ReadToEnd();
+            }
+            return returnText;
+        }
+
+        #endregion
+
+
+        /// <summary>
+        /// Get all of the modded files in the jet file. Compares it to the unmodded jet
+        /// </summary>
+        /// <param name="original">Original unmodded jet</param>
+        /// <param name="modded">The modded jet you want to check</param>
+        /// <returns>A list of filepaths to all of the modded files</returns>
         public List<string> GetAllModdedFiles(Zip original, Zip modded)
         {
-            return null;
+            List<string> moddedFiles = new List<string>();
+            return moddedFiles;
         }
 
         /// <summary>

@@ -124,21 +124,27 @@ namespace BTD_Backend
                 AddToFrontThreadQueue.Enqueue(tempT);
         }
 
+
+        int runningThreads = 0;
         /// <summary>
         /// Run the first thread in the ThreadQueue
         /// </summary>
         private void RunThread(bool nullifyThreadInst = false)
         {
-            /*if (ThreadQueue == null)
-                return;*/
-
             ThreadQueue.Peek().Start();
-            ThreadQueue.Peek().Join();
+            runningThreads++;
+
+            if (runningThreads >= 3)
+            {
+                ThreadQueue.Peek().Join();
+                runningThreads--;
+            }
 
             ThreadingEventArgs removeArgs = new ThreadingEventArgs();
             removeArgs.Thread = ThreadQueue.Peek();
 
             ThreadQueue.Dequeue();
+            
             ItemRemovedFromThreadQueue(removeArgs);
         }
 

@@ -43,12 +43,15 @@
     <Compile Include="BgThread.cs" />
     <Compile Include="Game\GameInfo.cs" />
     <Compile Include="Game\GameType.cs" />
+    <Compile Include="Game\Jet Files\JetHandler.cs" />
     <Compile Include="IO\FileIO.cs" />
     <Compile Include="Game\SteamUtils.cs" />
     <Compile Include="Guard.cs" />
-    <Compile Include="Game\JetPasswords.cs" />
+    <Compile Include="Game\Jet Files\JetPasswords.cs" />
+    <Compile Include="IO\ProcType.cs" />
     <Compile Include="IO\Windows.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="NKHook5\NKHook5Manager.cs" />
     <Compile Include="Persistence\UserData.cs" />
     <Compile Include="IO\Zip.cs" />
     <Compile Include="Uninstaller.cs" />
@@ -70,10 +73,13 @@
     <Reference Include="System.Web.Extensions" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Dll-Injector\" />
     <Folder Include="Save editing\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)BTD Backend.dll" "E:\Users\Mrclone2\Source\Repos\BTDToolbox.Wpf\BTDToolbox.Wpf\bin\Debug\" /y</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetDir)BTD Backend.dll" "E:\Users\Mrclone2\Source\Repos\BTDToolbox.Wpf\BTDToolbox.Wpf\bin\Debug\" /y
+copy "$(TargetDir)BTD Backend.dll" "E:\Users\Mrclone2\Documents\GitHub\Workbench\Workbench\Workbench\bin\Debug\" /y
+copy "$(TargetDir)BTD Backend.dll" "E:\Users\Mrclone2\Documents\GitHub\Workbench\Workbench\Workbench\" /y</PostBuildEvent>
   </PropertyGroup>
 </Project>
