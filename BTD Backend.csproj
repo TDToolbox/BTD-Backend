@@ -54,6 +54,8 @@
     <Compile Include="NKHook5\NKHook5Manager.cs" />
     <Compile Include="Persistence\UserData.cs" />
     <Compile Include="IO\Zip.cs" />
+    <Compile Include="Save editing\DgUtils.cs" />
+    <Compile Include="Save editing\Save Editor.cs" />
     <Compile Include="Uninstaller.cs" />
     <Compile Include="Web\GitApi.cs" />
     <Compile Include="Web\UpdateHandler.cs" />
@@ -74,7 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dll-Injector\" />
-    <Folder Include="Save editing\" />
+    <Folder Include="Mod Updater\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

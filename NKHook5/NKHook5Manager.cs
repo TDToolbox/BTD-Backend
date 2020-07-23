@@ -11,9 +11,39 @@ namespace BTD_Backend.NKHook5
     /// </summary>
     public class NKHook5Manager
     {
+        /// <summary>
+        /// The main directory for NKHook5.
+        /// </summary>
         public static string nkhDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\NKHook5";
+        
+        /// <summary>
+        /// The path to NKHoo5's EXE
+        /// </summary>
         public static string nkhEXE = nkhDir + "\\NKHook5-Injector.exe";
+        
+        /// <summary>
+        /// The URL to NKHook5's githubAPI releases
+        /// </summary>
         public static string gitURL = "https://api.github.com/repos/DisabledMallis/NKHook5/releases";
+
+        /// <summary>
+        /// Main updater method for NKHook. Handles all update related functions for ease of use.
+        /// </summary>
+        public static void HandleUpdates()
+        {
+            BgThread.AddToQueue(() =>
+            {
+                UpdateHandler update = new UpdateHandler
+                {
+                    GitApiReleasesURL = gitURL,
+                    ProjectExePath = nkhEXE,
+                    ProjectName = "NKHook5",
+                    InstallDirectory = nkhDir
+                };
+
+                update.HandleUpdates(false, false);
+            });
+        }
 
         /// <summary>
         /// Check if NKHook EXE exists
