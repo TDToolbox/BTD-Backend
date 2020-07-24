@@ -152,12 +152,12 @@ namespace BTD_Backend.Save_editing
 
             if (encoded == null)
             {
-                ConsoleHandler.force_append_Notice("Encryption failed for some reason...");
+                Log.Output("Encryption failed for some reason...");
                 return;
             }
 
             File.WriteAllBytes(encryptedSave, encoded);
-            ConsoleHandler.append_Force_CanRepeat("Finished writing save file...");
+            Log.Output("Finished writing save file...");
         }*/
     }
 }

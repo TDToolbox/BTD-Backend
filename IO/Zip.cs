@@ -71,6 +71,74 @@ namespace BTD_Backend.IO
                 Log.Output("ERROR! Tried to extract \"" + ToString() + "\" and failed. Can't extract the file because the password is incorrect");
         }
 
+        /// <summary>
+        /// Get all of the files in a ZipFile while preserving their original file structure. 
+        /// Uses the Archive assosiated with the custom Zip object. Needs to be called on seperate thread
+        /// </summary>
+        /// <returns>A list of files contained within the ZipFile, with their original path preserved</returns>
+        public List<string> GetFilesInZip() => GetFilesInZip(Archive);
+
+        /// <summary>
+        /// Get all of the files in a ZipFile while preserving their original file structure. 
+        /// Uses the Archive assosiated with a custom Zip object. Needs to be called on seperate thread
+        /// </summary>
+        /// <returns>A list of files contained within the ZipFile, with their original path preserved</returns>
+        public static List<string> GetFilesInZip(Zip zip) => GetFilesInZip(zip.Archive);
+
+        /// <summary>
+        /// Get all of the files in a ZipFile while preserving their original file structure. 
+        /// Needs to be called on seperate thread
+        /// </summary>
+        /// <param name="zipFile">The ZipFile you want to get files for</param>
+        /// <returns>A list of files contained within the ZipFile, with their original path preserved</returns>
+        public static List<string> GetFilesInZip(ZipFile zipFile)
+        {
+            List<string> entries = new List<string>();
+            foreach (var file in zipFile.Entries)
+            {
+                Log.Output(file.FileName);
+                //entries.Add(file.FileName);
+            }
+            return entries;
+        }
+
+        /// <summary>
+        /// Attempt to find the correct password for the ZipFile associated with this custom Zip object's Archive.
+        /// Returns null if not found
+        /// </summary>
+        /// <returns>The correct password or null</returns>
+        public string TryGetPassword() => TryGetPassword(Archive);
+
+        /// <summary>
+        /// Attempt to find the correct password for the ZipFile associated with the custom Zip object's Archive.
+        /// Returns null if not found
+        /// </summary>
+        /// <param name="zip">The Zip object you want the password for</param>
+        /// <returns>The correct password or null</returns>
+        public static string TryGetPassword(Zip zip) => TryGetPassword(zip.Archive);
+
+        /// <summary>
+        /// Attempt to find the correct password for a ZipFile. Returns null if not found
+        /// </summary>
+        /// <param name="zipFile">The ZipFile you want the password for</param>
+        /// <returns>The correct password or null</returns>
+        public static string TryGetPassword(ZipFile zipFile)
+        {
+            if (IsPasswordCorrect(zipFile, ""))
+                return "";
+
+            var passList = JetPassword.GetPasswords();
+            foreach (var pass in passList)
+            {
+                Log.Output(pass);
+                if (IsPasswordCorrect(zipFile, pass))
+                    return pass;
+            }
+
+            return null;
+        }
+
+
         #region IsPasswordCorrect methods
 
         /// <summary>

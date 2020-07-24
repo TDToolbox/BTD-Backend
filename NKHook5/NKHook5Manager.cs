@@ -26,6 +26,8 @@ namespace BTD_Backend.NKHook5
         /// </summary>
         public static string gitURL = "https://api.github.com/repos/DisabledMallis/NKHook5/releases";
 
+
+
         /// <summary>
         /// Main updater method for NKHook. Handles all update related functions for ease of use.
         /// </summary>

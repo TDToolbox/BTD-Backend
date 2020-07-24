@@ -1,5 +1,6 @@
 ﻿using BTD_Backend.Game;
 using BTD_Backend.IO;
+using BTD_Backend.Save_editing;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
@@ -43,6 +44,7 @@ namespace BTD_Backend.Persistence
         private static GameInfo btd5 = GameInfo.GetGame(GameType.BTD5);
         public string BTD5Dir { get; set; } = btd5.GameDir;
         public string BTD5Version { get; set; } = FileIO.GetFileVersion(btd5.GameDir + "\\" + btd5.EXEName);
+        public string BTD5SaveDir { get; set; } = SaveHandler.GetSavePath(GameType.BTD5);
         public string BTD5BackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + btd5.Type.ToString();
         #endregion
 
@@ -53,6 +55,7 @@ namespace BTD_Backend.Persistence
         private static GameInfo btdb = GameInfo.GetGame(GameType.BTDB);
         public string BTDBDir { get; set; } = btdb.GameDir;
         public string BTDBVersion { get; set; } = FileIO.GetFileVersion(btdb.GameDir + "\\" + btdb.EXEName);
+        public string BTDBSaveDir { get; set; } = SaveHandler.GetSavePath(GameType.BTDB);
         public string BTDBBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + btdb.Type.ToString();
         #endregion
 
@@ -63,6 +66,7 @@ namespace BTD_Backend.Persistence
         private static GameInfo bmc = GameInfo.GetGame(GameType.BMC);
         public string BMCDir { get; set; } = bmc.GameDir;
         public string BMCVersion { get; set; } = FileIO.GetFileVersion(bmc.GameDir + "\\" + bmc.EXEName);
+        public string BMCSaveDir { get; set; } = SaveHandler.GetSavePath(GameType.BMC);
         public string BMCBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + bmc.Type.ToString();
         #endregion
 
@@ -73,6 +77,7 @@ namespace BTD_Backend.Persistence
         private static GameInfo btd6 = GameInfo.GetGame(GameType.BTD6);
         public string BTD6Dir { get; set; } = btd6.GameDir;
         public string BTD6Version { get; set; } = FileIO.GetFileVersion(btd6.GameDir + "\\" + btd6.EXEName);
+        public string BTD6SaveDir { get; set; } = SaveHandler.GetSavePath(GameType.BTD6);
         public string BTD6BackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + btd6.Type.ToString();
         #endregion
 
@@ -83,6 +88,7 @@ namespace BTD_Backend.Persistence
         private static GameInfo btdat = GameInfo.GetGame(GameType.BTDAT);
         public string BTDATDir { get; set; } = btdat.GameDir;
         public string BTDATVersion { get; set; } = FileIO.GetFileVersion(btdat.GameDir + "\\" + btdat.EXEName);
+        public string BTDATSaveDir { get; set; } = SaveHandler.GetSavePath(GameType.BTDAT);
         public string BTDATBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + btdat.Type.ToString();
         #endregion
 

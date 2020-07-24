@@ -1,8 +1,10 @@
 ﻿using BTD_Backend.IO;
+using BTD_Backend.Persistence;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -51,6 +53,13 @@ namespace BTD_Backend.Game
             public static string UnixToWindowsPath(string UnixPath) =>
                 UnixPath.Replace("/", "\\").Replace("\\\\", "\\");
         }
+
+       /// <summary>
+       /// Get the SteamApp ID for the GameType you specify
+       /// </summary>
+       /// <param name="game">Which game to get the App ID for</param>
+       /// <returns>Steam Game App ID</returns>
+       public static UInt64 GetGameID(GameType game) => steamGames_appID_fromGame[game];
 
         /// <summary>
         /// Check if any of the game is running
@@ -219,6 +228,57 @@ namespace BTD_Backend.Game
             var appID = steamGames_appID_fromGame[gameType];
             Process.Start("steam://validate/" + appID);
         }
+
+
+
+        #region SteamUserID stuff
+        public Dictionary<int, string> GetAllSteamUsers()
+        {
+            Dictionary<int, string> steamUsers = new Dictionary<int, string>();
+            foreach (var dir in Directory.GetDirectories(GetSteamDir() + "\\userdata"))
+            {
+                string cfgFile = dir + "\\config\\localconfig.vdf";
+                if (!File.Exists(cfgFile))
+                    continue;
+
+
+                ReadLocalConfig(cfgFile, out int UserID, out string Username);
+                if (UserID == 0 || String.IsNullOrEmpty(Username))
+                    continue;
+
+                steamUsers.Add(UserID, Username);
+            }
+            return steamUsers;
+        }
+
+        private void ReadLocalConfig(string localConfigPath, out int UserID, out string Username)
+        {
+            UserID = 0;
+            Username = "";
+
+            bool nextLineIsUserID = false;
+            string[] lines = File.ReadAllText(localConfigPath).Split('\n');
+            List<string> properties = new List<string>();
+            foreach (var line in lines)
+            {
+                if (!line.Contains("\""))
+                    continue;
+
+                if (nextLineIsUserID)
+                {
+                    UserID = Int32.Parse(line.Replace("\"", "").Trim());
+                    break;
+                }
+
+                if (!line.Contains("PersonaName") && !line.Contains("PersonalName"))
+                    continue;
+
+                Username = line.Replace("\"", "").Replace("PersonaName", "").Replace("PersonalName", "").Trim();
+                nextLineIsUserID = true;
+            }
+        }
+
+        #endregion
 
 
         #region Events

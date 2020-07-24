@@ -5,8 +5,37 @@ using System.Threading;
 
 namespace BTD_Backend.Web
 {
+    /// <summary>
+    /// Contains methods relating to the internet, such as reading text from a webpage or downloading a file
+    /// </summary>
     public class WebHandler
     {
+        /// <summary>
+        /// Downloads string of text from the URL. Needs to be run on a thread if using UI, otherwise the UI will freeze
+        /// </summary>
+        /// <param name="url">URL to get string of text from</param>
+        /// <returns>String of text or nothing</returns>
+        public static string ReadText_FromURL(string url)
+        {
+            WebClient client = new WebClient();
+            client.Headers.Add("user-agent", " Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
+
+            string result = "";
+            for (int i = 0; i <= 250; i++)
+            {
+                try
+                {
+                    result = client.DownloadString(url);
+                    if (!Guard.IsStringValid(result))
+                        continue;
+
+                    break;
+                }
+                catch { Thread.Sleep(100); }
+            }
+            return result;
+        }
+
         /// <summary>
         /// Download file from URL. Needs to be run on a thread if using UI, otherwise the UI will freeze
         /// </summary>
@@ -43,32 +72,6 @@ namespace BTD_Backend.Web
 
             File.Move(tempDest, dest);
             Directory.Delete(tempDir, true);
-        }
-
-        /// <summary>
-        /// Downloads string of text from the URL. Needs to be run on a thread if using UI, otherwise the UI will freeze
-        /// </summary>
-        /// <param name="url">URL to get string of text from</param>
-        /// <returns>String of text or nothing</returns>
-        public static string ReadText_FromURL(string url)
-        {
-            WebClient client = new WebClient();
-            client.Headers.Add("user-agent", " Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
-
-            string result = "";
-            for (int i = 0; i <= 250; i++)
-            {
-                try
-                {
-                    result = client.DownloadString(url);
-                    if (!Guard.IsStringValid(result))
-                        continue;
-
-                    break;
-                }
-                catch { Thread.Sleep(100); }
-            }
-            return result;
         }
     }
 }

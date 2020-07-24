@@ -1,19 +1,16 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BTD_Backend.Save_editing
 {
-    //this was made by Vadmeme on github
-    //https://github.com/Vadmeme/BTDSaveEditor
-
+    /// <summary>
+    /// Contains methods relating to getting the password from the game's save file
+    /// This was made by Vadmeme on github: https://github.com/Vadmeme/BTDSaveEditor
+    /// </summary>
     public class DgUtil
     {
-
         public static long nk_crc32(byte[] message)
         {
             unchecked
@@ -151,6 +148,5 @@ namespace BTD_Backend.Save_editing
 
             return merge;
         }
-
     }
 }
