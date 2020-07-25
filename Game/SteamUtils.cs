@@ -95,10 +95,13 @@ namespace BTD_Backend.Game
         /// <returns>true or false, whether or not the game is installed</returns>
         public static bool IsGameInstalled(UInt64 appid)
         {
-            int isGameInstalled = (int)Registry.GetValue(Registry.CurrentUser +
+            var isGameInstalled = Registry.GetValue(Registry.CurrentUser +
                 "\\Software\\Valve\\Steam\\Apps\\" + appid, "Installed", null);
-            
-            return isGameInstalled == 1; //If 1 then program is installed
+
+            if (isGameInstalled == null)
+                return false;
+
+            return (int)isGameInstalled == 1; //If 1 then program is installed
         }
 
         /// <summary>
