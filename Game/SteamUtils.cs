@@ -182,7 +182,7 @@ namespace BTD_Backend.Game
                 string GameFolder = (SteamLibDirs[i] + "\\steamapps\\common\\" + gameName);
                 if (Directory.Exists(GameFolder))
                 {
-                    Log.Output("Found " + gameName + " directory at: " + GameFolder);
+                    //Log.Output("Found " + gameName + " directory at: " + GameFolder);
                     return GameFolder;
                 }
             }

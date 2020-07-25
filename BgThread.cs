@@ -70,17 +70,18 @@ namespace BTD_Backend
         /// Add a function to the ThreadQueue. It will execute the thread immediately if the thread Instance for this class isn't running
         /// </summary>
         /// <param name="func">The function to be added to the TheadQueue and run as a thread</param>
-        public static void AddToQueue(funcDelegate func, bool join = false) => AddToQueue(new Thread(() => func()), join);
+        public static void AddToQueue(funcDelegate func, ApartmentState threadType = ApartmentState.Unknown, bool join = false) => AddToQueue(new Thread(() => func()), threadType, join);
 
         /// <summary>
         /// Add a thread to the ThreadQueue. It will execute the thread immediately if the thread Instance for this class isn't running
         /// </summary>
         /// <param name="thread">Thread to be added to the ThreadQueue</param>
-        public static void AddToQueue(Thread thread, bool join = false)
+        public static void AddToQueue(Thread thread, ApartmentState threadType = ApartmentState.Unknown, bool join = false)
         {
             if (ThreadQueue == null)
                 ThreadQueue = new Queue<Thread>();
 
+            thread.SetApartmentState(threadType);
             ThreadQueue.Enqueue(thread);
 
             ThreadingEventArgs args = new ThreadingEventArgs();
@@ -95,7 +96,7 @@ namespace BTD_Backend
         /// Add a list of threads to the ThreadQueue. It will execute them immediately if the thread Instance for this class isn't running
         /// </summary>
         /// <param name="threads"></param>
-        public static void AddToQueue(List<Thread> threads, bool join = false)
+        public static void AddToQueue(List<Thread> threads, ApartmentState threadType = ApartmentState.Unknown, bool join = false)
         {
             if (threads == null || threads.Count() <= 0)
             {
@@ -104,7 +105,7 @@ namespace BTD_Backend
             }
 
             foreach (var thread in threads)
-                AddToQueue(thread, join);
+                AddToQueue(thread, threadType, join);
         }
 
         public static void AddToFrontOfQueue(funcDelegate func) => AddToFrontOfQueue(new Thread(() => func()));

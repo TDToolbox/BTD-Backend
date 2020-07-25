@@ -3,6 +3,7 @@ using Ionic.Zip;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 
 namespace BTD_Backend.IO
 {
@@ -15,17 +16,30 @@ namespace BTD_Backend.IO
         /// <summary>
         /// The path to the existing zip file
         /// </summary>
-        public string Path { get; private set; }
-        
+        public string Path { get; set; }
+
         /// <summary>
         /// The password to the existing zip file, if there is one
         /// </summary>
-        public string Password { get; private set; }
-        
+        private string password;
+
+        public string Password
+        {
+            get { return password; }
+            set 
+            { 
+                password = value;
+                if (Archive != null)
+                    Archive.Password = value;
+            }
+        }
+
+
+
         /// <summary>
         /// The ionicZip ZipFile instance created and managed by this class
         /// </summary>
-        public ZipFile Archive { get; private set; }
+        public ZipFile Archive { get; set; }
         #endregion
 
 
@@ -71,19 +85,19 @@ namespace BTD_Backend.IO
                 Log.Output("ERROR! Tried to extract \"" + ToString() + "\" and failed. Can't extract the file because the password is incorrect");
         }
 
+        public enum EntryType
+        {
+            All,
+            Files,
+            Directories
+        }
+
         /// <summary>
         /// Get all of the files in a ZipFile while preserving their original file structure. 
         /// Uses the Archive assosiated with the custom Zip object. Needs to be called on seperate thread
         /// </summary>
         /// <returns>A list of files contained within the ZipFile, with their original path preserved</returns>
-        public List<string> GetFilesInZip() => GetFilesInZip(Archive);
-
-        /// <summary>
-        /// Get all of the files in a ZipFile while preserving their original file structure. 
-        /// Uses the Archive assosiated with a custom Zip object. Needs to be called on seperate thread
-        /// </summary>
-        /// <returns>A list of files contained within the ZipFile, with their original path preserved</returns>
-        public static List<string> GetFilesInZip(Zip zip) => GetFilesInZip(zip.Archive);
+        public List<string> GetEntries(EntryType type, string baseDirectory = "", SearchOption searchOption = SearchOption.TopDirectoryOnly) => GetEntries(Archive, type, baseDirectory, searchOption);
 
         /// <summary>
         /// Get all of the files in a ZipFile while preserving their original file structure. 
@@ -91,16 +105,88 @@ namespace BTD_Backend.IO
         /// </summary>
         /// <param name="zipFile">The ZipFile you want to get files for</param>
         /// <returns>A list of files contained within the ZipFile, with their original path preserved</returns>
-        public static List<string> GetFilesInZip(ZipFile zipFile)
+        public static List<string> GetEntries(ZipFile zipFile, EntryType entryType, string baseDirectory = "", SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
+            if (String.IsNullOrEmpty(baseDirectory))
+                baseDirectory = "Assets/";
+
             List<string> entries = new List<string>();
             foreach (var file in zipFile.Entries)
             {
-                Log.Output(file.FileName);
-                //entries.Add(file.FileName);
+                if (entryType == EntryType.Directories)
+                    if (!file.IsDirectory)
+                        continue;
+
+                if (entryType == EntryType.Files)
+                    if (file.IsDirectory)
+                        continue;
+
+                if (!file.FileName.Contains(baseDirectory))
+                    continue;
+
+                string[] folderNameSplit = file.FileName.Split('/');
+                if (folderNameSplit[folderNameSplit.Length - 2].ToLower().Contains(baseDirectory.ToLower()))
+                    baseDirectory = file.FileName;
+
+                if (searchOption == SearchOption.TopDirectoryOnly)
+                {
+                    string[] baseSplit = baseDirectory.Split('/');
+                    string[] currentSplit = file.FileName.Split('/');
+
+                    if ((baseSplit.Length + 1) < currentSplit.Length)
+                        continue;
+                }
+
+                entries.Add(file.FileName);
             }
             return entries;
         }
+
+        /// <summary>
+        /// Get all directories in the ZipFile
+        /// </summary>
+        /// <param name="directory">an optional base directory that all returned directories need to share</param>
+        /// <returns>A list of directories in the Archive of the Zip</returns>
+        //public List<string> GetDirectories(string baseDirectory = "", SearchOption searchOption = SearchOption.TopDirectoryOnly) => GetDirectories(Archive, baseDirectory, searchOption);
+
+        /// <summary>
+        /// Get all directories in the ZipFile
+        /// </summary>
+        /// <param name="zipFile">The ZipFile you want to get directories from</param>
+        /// <param name="directory">an optional base directory that all returned directories need to share</param>
+        /// <returns>A list of directories in the ZipFile</returns>
+        /*public static List<string> GetDirectories(ZipFile zipFile, string baseDirectory = "", SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        {
+            if (String.IsNullOrEmpty(baseDirectory))
+                baseDirectory = "Assets/";
+
+            List<string> directories = new List<string>();
+            foreach (var file in zipFile.Entries)
+            {
+                if (!file.IsDirectory)
+                    continue;
+
+                if (!file.FileName.Contains(baseDirectory))
+                    continue;
+
+                string[] folderNameSplit = file.FileName.Split('/');
+                if (folderNameSplit[folderNameSplit.Length - 2].ToLower().Contains(baseDirectory.ToLower()))
+                    baseDirectory = file.FileName;
+
+                if (searchOption == SearchOption.TopDirectoryOnly)
+                {
+                    string[] baseSplit = baseDirectory.Split('/');
+                    string[] currentSplit = file.FileName.Split('/');
+
+                    if ((baseSplit.Length + 1) < currentSplit.Length)
+                        continue;
+                }
+                
+                directories.Add(file.FileName);
+            }
+            return directories;
+        }*/
+        
 
         /// <summary>
         /// Attempt to find the correct password for the ZipFile associated with this custom Zip object's Archive.
@@ -130,9 +216,8 @@ namespace BTD_Backend.IO
             var passList = JetPassword.GetPasswords();
             foreach (var pass in passList)
             {
-                Log.Output(pass);
-                if (IsPasswordCorrect(zipFile, pass))
-                    return pass;
+                if (IsPasswordCorrect(zipFile, pass.Trim('\n','\r')))
+                    return pass.Trim('\n', '\r');
             }
 
             return null;
@@ -177,6 +262,8 @@ namespace BTD_Backend.IO
             string tempDir = Environment.CurrentDirectory + "\\Temp";
             if (!Directory.Exists(tempDir))
                 Directory.CreateDirectory(tempDir);
+
+            zip.Password = password;
 
             int i = 0;
             bool result = false;

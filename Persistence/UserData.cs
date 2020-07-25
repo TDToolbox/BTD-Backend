@@ -14,11 +14,12 @@ namespace BTD_Backend.Persistence
     /// </summary>
     public class UserData
     {
-        private static UserData data;
-        public static string MainProgramName { get; set; } = "";
-        public static string MainProgramExePath { get; set; } = "";
-        public static string MainSettingsDir { get; set; } = "";
-        public static string UserDataFilePath { get; set; } = "";
+        public static string MainProgramName;
+        public static string MainProgramExePath;
+        public static string MainSettingsDir;
+        public static string UserDataFilePath;
+        
+        public static UserData Instance;
 
 
         /// <summary>
@@ -132,8 +133,8 @@ namespace BTD_Backend.Persistence
         /// </summary>
         public static void OpenSettingsDir()
         {
-            if (data == null)
-                data = new UserData();
+            if (Instance == null)
+                Instance = new UserData();
 
             if (!Directory.Exists(MainSettingsDir))
                 Directory.CreateDirectory(MainSettingsDir);
@@ -147,17 +148,20 @@ namespace BTD_Backend.Persistence
         /// <returns>The loaded userdata</returns>
         public static UserData LoadUserData()
         {
+            if (Instance == null)
+                Instance = new UserData();
+
             if (!File.Exists(UserDataFilePath))
-                return data = new UserData();
+                return Instance;
 
             string json = File.ReadAllText(UserDataFilePath);
             if (json == "null" || !Guard.IsJsonValid(json))
             {
                 Log.Output("Userdata has invalid json, generating a new one.");
-                return data = new UserData();
+                return Instance = new UserData();
             }
             
-            return data = JsonConvert.DeserializeObject<UserData>(json);
+            return Instance = JsonConvert.DeserializeObject<UserData>(json);
         }
 
         /// <summary>
@@ -165,10 +169,10 @@ namespace BTD_Backend.Persistence
         /// </summary>
         public static void SaveUserData()
         {
-            if (data == null)
+            if (Instance == null)
                 LoadUserData();
 
-            string output = JsonConvert.SerializeObject(data, Formatting.Indented);
+            string output = JsonConvert.SerializeObject(Instance, Formatting.Indented);
 
             StreamWriter serialize = new StreamWriter(UserDataFilePath, false);
             serialize.Write(output);
