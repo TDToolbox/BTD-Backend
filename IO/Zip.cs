@@ -163,10 +163,22 @@ namespace BTD_Backend.IO
                 item = item.TrimEnd('/');
                 string[] itemSplit = item.Split('/');
 
+                
                 //Skip item if it doesnt contain 1 more slash than current folder,
                 //or if it doesnt contain current folder
-                if (itemSplit.Length - 1 != currentFolderSplit.Length || !item.Contains(currentFolderSplit[currentFolderSplit.Length -1]))
+                if (itemSplit.Length - 1 != currentFolderSplit.Length)
                     continue;
+
+                if (!item.Contains(currentFolderSplit[currentFolderSplit.Length - 1]))
+                    continue;
+
+                if (String.IsNullOrEmpty(baseDirectory))
+                {
+                    if (itemSplit.Length - 1 > 1)
+                        continue;
+
+                    item = itemSplit[itemSplit.Length - 2];
+                }
 
                 entries.Add(item);
             }
