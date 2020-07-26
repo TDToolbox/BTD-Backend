@@ -5,6 +5,7 @@
     /// </summary>
     public enum GameType
     {
+        None,
         BTD5,
         BTDB,
         BMC,

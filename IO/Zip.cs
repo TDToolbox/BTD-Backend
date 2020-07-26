@@ -16,7 +16,24 @@ namespace BTD_Backend.IO
         /// <summary>
         /// The path to the existing zip file
         /// </summary>
-        public string Path { get; set; }
+        private string path;
+
+        public string Path
+        {
+            get { return path; }
+            set
+            {
+                path = value;
+                if (Archive != null)
+                {
+                    if (String.IsNullOrEmpty(Archive.Name))
+                        Archive = new ZipFile(path);
+                    else
+                        Archive.Name = value;
+                }
+            }
+        }
+
 
         /// <summary>
         /// The password to the existing zip file, if there is one
@@ -97,7 +114,7 @@ namespace BTD_Backend.IO
         /// Uses the Archive assosiated with the custom Zip object. Needs to be called on seperate thread
         /// </summary>
         /// <returns>A list of files contained within the ZipFile, with their original path preserved</returns>
-        public List<string> GetEntries(EntryType type, string baseDirectory = "", SearchOption searchOption = SearchOption.TopDirectoryOnly) => GetEntries(Archive, type, baseDirectory, searchOption);
+        public List<string> GetEntries(EntryType type, SearchOption searchOption, string baseDirectory = "") => GetEntries(Archive, type, searchOption, baseDirectory);
 
         /// <summary>
         /// Get all of the files in a ZipFile while preserving their original file structure. 
@@ -105,12 +122,33 @@ namespace BTD_Backend.IO
         /// </summary>
         /// <param name="zipFile">The ZipFile you want to get files for</param>
         /// <returns>A list of files contained within the ZipFile, with their original path preserved</returns>
-        public static List<string> GetEntries(ZipFile zipFile, EntryType entryType, string baseDirectory = "", SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public static List<string> GetEntries(ZipFile zipFile, EntryType entryType, SearchOption searchOption, string baseDirectory = "")
         {
-            if (String.IsNullOrEmpty(baseDirectory))
-                baseDirectory = "Assets/";
-
             List<string> entries = new List<string>();
+            if (searchOption == SearchOption.AllDirectories)
+            {
+                foreach (var item in zipFile.Entries)
+                {
+                    if (entryType == EntryType.All)
+                        entries.Add(item.FileName);
+                    else
+                    {
+                        if (entryType == EntryType.Directories)
+                        {
+                            if (item.IsDirectory)
+                                entries.Add(item.FileName);
+                        }
+                        else
+                        {
+                            if (!item.IsDirectory)
+                                entries.Add(item.FileName);
+                        }
+                    }
+                }
+                return entries;
+            }
+
+            string[] currentFolderSplit = baseDirectory.TrimEnd('/').Split('/');
             foreach (var file in zipFile.Entries)
             {
                 if (entryType == EntryType.Directories)
@@ -121,71 +159,19 @@ namespace BTD_Backend.IO
                     if (file.IsDirectory)
                         continue;
 
-                if (!file.FileName.Contains(baseDirectory))
+                string item = file.FileName;
+                item = item.TrimEnd('/');
+                string[] itemSplit = item.Split('/');
+
+                //Skip item if it doesnt contain 1 more slash than current folder,
+                //or if it doesnt contain current folder
+                if (itemSplit.Length - 1 != currentFolderSplit.Length || !item.Contains(currentFolderSplit[currentFolderSplit.Length -1]))
                     continue;
 
-                string[] folderNameSplit = file.FileName.Split('/');
-                if (folderNameSplit[folderNameSplit.Length - 2].ToLower().Contains(baseDirectory.ToLower()))
-                    baseDirectory = file.FileName;
-
-                if (searchOption == SearchOption.TopDirectoryOnly)
-                {
-                    string[] baseSplit = baseDirectory.Split('/');
-                    string[] currentSplit = file.FileName.Split('/');
-
-                    if ((baseSplit.Length + 1) < currentSplit.Length)
-                        continue;
-                }
-
-                entries.Add(file.FileName);
+                entries.Add(item);
             }
             return entries;
         }
-
-        /// <summary>
-        /// Get all directories in the ZipFile
-        /// </summary>
-        /// <param name="directory">an optional base directory that all returned directories need to share</param>
-        /// <returns>A list of directories in the Archive of the Zip</returns>
-        //public List<string> GetDirectories(string baseDirectory = "", SearchOption searchOption = SearchOption.TopDirectoryOnly) => GetDirectories(Archive, baseDirectory, searchOption);
-
-        /// <summary>
-        /// Get all directories in the ZipFile
-        /// </summary>
-        /// <param name="zipFile">The ZipFile you want to get directories from</param>
-        /// <param name="directory">an optional base directory that all returned directories need to share</param>
-        /// <returns>A list of directories in the ZipFile</returns>
-        /*public static List<string> GetDirectories(ZipFile zipFile, string baseDirectory = "", SearchOption searchOption = SearchOption.TopDirectoryOnly)
-        {
-            if (String.IsNullOrEmpty(baseDirectory))
-                baseDirectory = "Assets/";
-
-            List<string> directories = new List<string>();
-            foreach (var file in zipFile.Entries)
-            {
-                if (!file.IsDirectory)
-                    continue;
-
-                if (!file.FileName.Contains(baseDirectory))
-                    continue;
-
-                string[] folderNameSplit = file.FileName.Split('/');
-                if (folderNameSplit[folderNameSplit.Length - 2].ToLower().Contains(baseDirectory.ToLower()))
-                    baseDirectory = file.FileName;
-
-                if (searchOption == SearchOption.TopDirectoryOnly)
-                {
-                    string[] baseSplit = baseDirectory.Split('/');
-                    string[] currentSplit = file.FileName.Split('/');
-
-                    if ((baseSplit.Length + 1) < currentSplit.Length)
-                        continue;
-                }
-                
-                directories.Add(file.FileName);
-            }
-            return directories;
-        }*/
         
 
         /// <summary>
@@ -217,7 +203,10 @@ namespace BTD_Backend.IO
             foreach (var pass in passList)
             {
                 if (IsPasswordCorrect(zipFile, pass.Trim('\n','\r')))
+                {
+                    Log.Output("Automatically aquired password. Password for " + zipFile.Name + " is " + pass.Trim('\n', '\r'));
                     return pass.Trim('\n', '\r');
+                }
             }
 
             return null;
@@ -340,10 +329,16 @@ namespace BTD_Backend.IO
                 if (!entry.FileName.Replace("\\", "/").Contains(filePathInZip))
                     continue;
 
-                Stream s;
-                if (!Guard.IsStringValid(password))
-                    s = entry.OpenReader();
-                else
+                Stream s = null;
+
+                bool hasPassword = !String.IsNullOrEmpty(password);
+                if (!hasPassword)
+                {
+                    try { s = entry.OpenReader(); }
+                    catch { hasPassword = true; }
+                }
+                
+                if (hasPassword)
                 {
                     if (!IsPasswordCorrect(zipFile, password))
                     {
@@ -360,6 +355,11 @@ namespace BTD_Backend.IO
                     s = entry.OpenReader(password);
                 }
 
+                if (s == null)
+                {
+                    Log.Output("Read steam was null, failed to read file from zip");
+                    return null;
+                }
                 StreamReader sr = new StreamReader(s);
                 returnText = sr.ReadToEnd();
             }

@@ -52,6 +52,7 @@
     <Compile Include="IO\Windows.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="NKHook5\NKHook5Manager.cs" />
+    <Compile Include="Persistence\ProjectData.cs" />
     <Compile Include="Persistence\UserData.cs" />
     <Compile Include="IO\Zip.cs" />
     <Compile Include="Save editing\DgUtils.cs" />
