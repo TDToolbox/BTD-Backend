@@ -66,6 +66,9 @@ namespace BTD_Backend
 
             foreach (var item in sortedEntries)
             {
+                if (tree.Items.Cast<TreeViewItem>().Any(t => t.Header.ToString() == item))
+                    continue;
+
                 TreeViewItem treeItem = new TreeViewItem();
                 treeItem.Header = item;
                 treeItem.Expanded += TreeItem_Expanded;
@@ -80,6 +83,9 @@ namespace BTD_Backend
 
             foreach (var item in sortedEntries)
             {
+                if (tree.Items.Cast<TreeViewItem>().Any(t => t.Header.ToString() == item))
+                    continue;
+
                 TreeViewItem treeItem = new TreeViewItem();
                 treeItem.Header = item;
                 treeItem.Expanded += TreeItem_Expanded;
@@ -96,7 +102,7 @@ namespace BTD_Backend
             OnTreeItemExpanded(args);
         }
 
-        private List<string> SortEntries(TreeView tree, List<string> entries)
+        private List<string> SortEntries(ItemsControl tree, List<string> entries)
         {
             List<string> sortedEntries = new List<string>();
             foreach (var entry in entries)
@@ -113,42 +119,6 @@ namespace BTD_Backend
             }
             return sortedEntries;
         }
-
-        private List<string> SortEntries(TreeViewItem tree, List<string> entries)
-        {
-            List<string> sortedEntries = new List<string>();
-            foreach (var entry in entries)
-            {
-                string item = entry;
-                item = item.TrimEnd('/');
-                string[] itemSplit = item.Split('/');
-
-                //Does the source already have this item? If so skip
-                if (tree.Items.Cast<TreeViewItem>().Any(t => t.Header.ToString() == item))
-                    continue;
-
-                sortedEntries.Add(itemSplit[itemSplit.Length - 1]);
-            }
-            return sortedEntries;
-        }
-
-        /*private List<string> SortEntries(ItemsControl tree, List<string> entries)
-        {
-            List<string> sortedEntries = new List<string>();
-            foreach (var entry in entries)
-            {
-                string item = entry;
-                item = item.TrimEnd('/');
-                string[] itemSplit = item.Split('/');
-
-                //Does the source already have this item? If so skip
-                if (tree.Items.Cast<TreeViewItem>().Any(t => t.Header.ToString() == item))
-                    continue;
-
-                sortedEntries.Add(itemSplit[itemSplit.Length - 1]);
-            }
-            return sortedEntries;
-        }*/
 
         public static string GetHeaderPath(TreeViewItem current)
         {
@@ -168,6 +138,7 @@ namespace BTD_Backend
             }
             if (String.IsNullOrEmpty(path))
                 return "";
+
             return path.Substring(0, path.Length - 1);
         }
 
