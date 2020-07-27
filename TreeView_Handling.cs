@@ -34,10 +34,10 @@ namespace BTD_Backend
         /// <param name="jet"></param>
         /// <param name="source"></param>
         /// <param name="treeItemPath"></param>
-        public static void PopulateTreeView(Zip jet, TreeView source)
+        public static void PopulateTreeView(Zip jet, TreeView source, SearchOption searchOption)
         {
-            var folders = jet.GetEntries(Zip.EntryType.Directories, SearchOption.TopDirectoryOnly);
-            var files = jet.GetEntries(Zip.EntryType.Files, SearchOption.TopDirectoryOnly);
+            var folders = jet.GetEntries(Zip.EntryType.Directories, searchOption);
+            var files = jet.GetEntries(Zip.EntryType.Files, searchOption);
 
             var treeHandling = new TreeView_Handling();
             treeHandling.AddToTreeView(source, folders);
@@ -50,10 +50,10 @@ namespace BTD_Backend
         /// <param name="jet"></param>
         /// <param name="source"></param>
         /// <param name="treeItemPath"></param>
-        public static void PopulateTreeView(Zip jet, TreeViewItem source, string treeItemPath)
+        public static void PopulateTreeView(Zip jet, TreeViewItem source, SearchOption searchOption, string treeItemPath)
         {
-            var folders = jet.GetEntries(Zip.EntryType.Directories, SearchOption.TopDirectoryOnly, treeItemPath);
-            var files = jet.GetEntries(Zip.EntryType.Files, SearchOption.TopDirectoryOnly, treeItemPath);
+            var folders = jet.GetEntries(Zip.EntryType.Directories, searchOption, treeItemPath);
+            var files = jet.GetEntries(Zip.EntryType.Files, searchOption, treeItemPath);
 
             var treeHandling = new TreeView_Handling();
             treeHandling.AddToTreeView(source, folders);

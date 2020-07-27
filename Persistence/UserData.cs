@@ -3,6 +3,7 @@ using BTD_Backend.IO;
 using BTD_Backend.Save_editing;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -101,6 +102,9 @@ namespace BTD_Backend.Persistence
         public string NKArchiveDir { get; set; } = nkArchive.GameDir;
         public string NKArchiveVersion { get; set; } = FileIO.GetFileVersion(nkArchive.GameDir + "\\" + nkArchive.EXEName);
         public string NKArchiveBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + nkArchive.Type.ToString();
+
+        
+        public List<string> PreviousProjects { get; set; }
         #endregion
 
 
@@ -124,6 +128,9 @@ namespace BTD_Backend.Persistence
 
             if (!Guard.IsStringValid(UserDataFilePath))
                 UserDataFilePath = MainSettingsDir + "\\userdata.json";
+
+            if (PreviousProjects == null)
+                PreviousProjects = new List<string>();
         }
 
         #endregion
