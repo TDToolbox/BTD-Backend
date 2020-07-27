@@ -27,10 +27,15 @@ namespace BTD_Backend.Persistence
             }
             set { instance = value; }
         }
-
+        public bool IsJet { get; set; }
+        public bool IsSave { get; set; }
+        public bool IsNKH { get; set; }
         public string ProjectName { get; set; }
         public string WBP_Path { get; set; }
         public DateTime LastOpened { get; set; } = DateTime.Now;
+        public string TargetGame { get; set; }
+        public string TargetVersion { get; set; }
+        public string JetPassword { get; set; } = "Q%_{6#Px]]";
 
         #endregion
 
@@ -40,19 +45,78 @@ namespace BTD_Backend.Persistence
         {
 
         }
-
         public ProjectData(string wbp_path)
         {
             WBP_Path = wbp_path;
         }
-
+        public ProjectData(string projName, string wbp_path)
+        {
+            ProjectName = projName;
+            WBP_Path = wbp_path;
+        }
         public ProjectData(string projName, string wbp_path, DateTime lastOpened)
         {
             ProjectName = projName;
             WBP_Path = wbp_path;
             LastOpened = lastOpened;
         }
-
+        public ProjectData(string projName, string wbp_path, DateTime lastOpened, bool IsJet)
+        {
+            ProjectName = projName;
+            WBP_Path = wbp_path;
+            LastOpened = lastOpened;
+            this.IsJet = IsJet;
+        }
+        public ProjectData(string projName, string wbp_path, DateTime lastOpened, bool IsJet, bool IsSave)
+        {
+            ProjectName = projName;
+            WBP_Path = wbp_path;
+            LastOpened = lastOpened;
+            this.IsJet = IsJet;
+            this.IsSave = IsSave;
+        }
+        public ProjectData(string projName, string wbp_path, DateTime lastOpened, bool IsJet, bool IsSave, bool IsNKH)
+        {
+            ProjectName = projName;
+            WBP_Path = wbp_path;
+            LastOpened = lastOpened;
+            this.IsJet = IsJet;
+            this.IsSave = IsSave;
+            this.IsNKH = IsNKH;
+        }
+        public ProjectData(string projName, string wbp_path, DateTime lastOpened, bool IsJet, bool IsSave, bool IsNKH, string TargetGame)
+        {
+            ProjectName = projName;
+            WBP_Path = wbp_path;
+            LastOpened = lastOpened;
+            this.IsJet = IsJet;
+            this.IsSave = IsSave;
+            this.IsNKH = IsNKH;
+            this.TargetGame = TargetGame;
+        }
+        public ProjectData(string projName, string wbp_path, DateTime lastOpened, bool IsJet, bool IsSave, bool IsNKH, string TargetGame, string TargetVersion)
+        {
+            ProjectName = projName;
+            WBP_Path = wbp_path;
+            LastOpened = lastOpened;
+            this.IsJet = IsJet;
+            this.IsSave = IsSave;
+            this.IsNKH = IsNKH;
+            this.TargetGame = TargetGame;
+            this.TargetVersion = TargetVersion;
+        }
+        public ProjectData(string projName, string wbp_path, DateTime lastOpened, bool IsJet, bool IsSave, bool IsNKH, string TargetGame, string TargetVersion, string JetPassword)
+        {
+            ProjectName = projName;
+            WBP_Path = wbp_path;
+            LastOpened = lastOpened;
+            this.IsJet = IsJet;
+            this.IsSave = IsSave;
+            this.IsNKH = IsNKH;
+            this.TargetGame = TargetGame;
+            this.TargetVersion = TargetVersion;
+            this.JetPassword = JetPassword;
+        }
         #endregion
 
 
