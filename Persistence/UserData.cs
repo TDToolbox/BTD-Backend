@@ -186,7 +186,6 @@ namespace BTD_Backend.Persistence
             serialize.Close();
         }
 
-
         #region Exceptions
         /// <summary>
         /// Throw exception if developer forgot to set the MainProgramName property.

@@ -124,7 +124,7 @@ namespace BTD_Backend.Persistence
 
         public static void SaveProject(ProjectData project, string WBP_Path)
         {
-            Zip wbp = new Zip(WBP_Path);
+            /*Zip wbp = new Zip(WBP_Path);
             if (project.WBP_Path == null)
                 project.WBP_Path = WBP_Path;
 
@@ -138,15 +138,17 @@ namespace BTD_Backend.Persistence
 
                 wbp.Archive.AddEntry("project data.json", output);
                 MessageBox.Show(output);
-            }
-
-            
+            }*/
+            Wbp wbp = new Wbp(WBP_Path);
+            wbp.setProjectData(project);
         }
 
         public ProjectData LoadProject() => LoadProject(WBP_Path);
         public static ProjectData LoadProject(string WBP_Path)
         {
-            Zip wbp = new Zip(WBP_Path);
+            Wbp wbp = new Wbp(WBP_Path);
+            return wbp.getProjectData();
+            /*
             foreach (var item in wbp.Archive.Entries)
             {
                 if (!item.FileName.Contains("project data.json"))
@@ -163,6 +165,7 @@ namespace BTD_Backend.Persistence
             }
 
             return new ProjectData();
+            */
         }
     }
 }
