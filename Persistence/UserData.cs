@@ -64,7 +64,7 @@ namespace BTD_Backend.Persistence
         /// <summary>
         /// Bloons Monkey City Data
         /// </summary>
-        #region
+        #region Monkey City
         private static GameInfo bmc = GameInfo.GetGame(GameType.BMC);
         public string BMCDir { get; set; } = bmc.GameDir;
         public string BMCVersion { get; set; } = FileIO.GetFileVersion(bmc.GameDir + "\\" + bmc.EXEName);

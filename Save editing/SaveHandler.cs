@@ -10,14 +10,20 @@ namespace BTD_Backend.Save_editing
         {
             List<string> result = new List<string>();
             var appID = SteamUtils.GetGameID(game);
-            var dirs = Directory.GetDirectories(SteamUtils.GetSteamDir() + "\\userdata", "*", SearchOption.AllDirectories);
-            foreach (var dir in dirs)
+            try
             {
-                if (!dir.Contains(appID.ToString()))
-                    continue;
+                var dirs = Directory.GetDirectories(SteamUtils.GetSteamDir() + "\\userdata", "*", SearchOption.AllDirectories);
+                foreach (var dir in dirs)
+                {
+                    if (!dir.Contains(appID.ToString()))
+                        continue;
 
-                return dir.Replace("/","\\");
+                    return dir.Replace("/", "\\");
+                }
             }
+            catch
+            { return ""; }
+
             return "";
         }
     }

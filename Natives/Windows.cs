@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace BTD_Backend.IO
+namespace BTD_Backend.Natives
 {
     /// <summary>
     /// Contains Windows related methods, like terminate a process

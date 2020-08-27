@@ -23,11 +23,12 @@ namespace BTD_Backend
         #endregion
 
         #region Events
-        public event EventHandler<LogEvents> MessageLogged;
+        public static event EventHandler<LogEvents> MessageLogged;
 
         public class LogEvents : EventArgs
         {
             public string Message { get; set; }
+            public bool UseMsgBox { get; set; }
         }
 
         /// <summary>
@@ -48,9 +49,10 @@ namespace BTD_Backend
         /// Passes message to OnMessageLogged for Event Handling.
         /// </summary>
         /// <param name="text">Message to output to user</param>
-        public static void Output(string text)
+        public static void Output(string text, bool useMsgBox = false)
         {
             LogEvents args = new LogEvents();
+            args.UseMsgBox = useMsgBox;
             args.Message = ">> " + text + Environment.NewLine;
             Instance.OnMessageLogged(args);
         }

@@ -64,6 +64,11 @@ namespace BTD_Backend.Game
         /// The password for the game's jet file. Example: "Q%_{6#Px]]"
         /// </summary>
         public string JetPassword { get; set; }
+
+        /// <summary>
+        /// The SteamApp ID for this game
+        /// </summary>
+        public ulong SteamID { get; set; }
         #endregion
 
 
@@ -94,7 +99,8 @@ namespace BTD_Backend.Game
                 SaveDir = "",
                 ProcName = "BTD5-Win",
                 JetName = "BTD5.jet",
-                JetPassword = "Q%_{6#Px]]"
+                JetPassword = "Q%_{6#Px]]",
+                SteamID = SteamUtils.GetGameID(GameType.BTD5)
             };
 
             var btdb = new GameInfo
@@ -105,7 +111,8 @@ namespace BTD_Backend.Game
                 SaveDir = "",
                 ProcName = "Battles-Win",
                 JetName = "data.jet",
-                JetPassword = ""
+                JetPassword = "",
+                SteamID = SteamUtils.GetGameID(GameType.BTDB)
             };
 
             var bmc = new GameInfo
@@ -116,7 +123,8 @@ namespace BTD_Backend.Game
                 SaveDir = "",
                 ProcName = "MonkeyCity-Win",
                 JetName = "data.jet",
-                JetPassword = "Q%_{6#Px]]"
+                JetPassword = "Q%_{6#Px]]",
+                SteamID = SteamUtils.GetGameID(GameType.BMC)
             };
 
             var btd6 = new GameInfo
@@ -127,7 +135,8 @@ namespace BTD_Backend.Game
                 SaveDir = "",
                 ProcName = "BloonsTD6",
                 JetName = "",
-                JetPassword = ""
+                JetPassword = "",
+                SteamID = SteamUtils.GetGameID(GameType.BTD6)
             };
 
             var btdat = new GameInfo
@@ -138,7 +147,8 @@ namespace BTD_Backend.Game
                 SaveDir = "",
                 ProcName = "btdadventuretime",
                 JetName = "",
-                JetPassword = ""
+                JetPassword = "",
+                SteamID = SteamUtils.GetGameID(GameType.BTDAT)
             };
 
             var nkArchive = new GameInfo
@@ -149,7 +159,8 @@ namespace BTD_Backend.Game
                 SaveDir = "",
                 ProcName = "Ninja Kiwi Archive",
                 JetName = "",
-                JetPassword = ""
+                JetPassword = "",
+                SteamID = SteamUtils.GetGameID(GameType.NKArchive)
             };
 
             games = new List<GameInfo>() { btd5, btdb, bmc, btd6, btdat, nkArchive };
