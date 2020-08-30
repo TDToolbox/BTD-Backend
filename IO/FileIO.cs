@@ -79,5 +79,26 @@ namespace BTD_Backend.IO
 
             return FileVersionInfo.GetVersionInfo(path).FileVersion;
         }
+
+        /// <summary>
+        /// Use this to rename a file to "FileName_Copy 1", and increment as long as there is a copy
+        /// </summary>
+        /// <param name="path">Path of file to increment</param>
+        /// <returns></returns>
+        public static string IncrementFileName(string path)
+        {
+            FileInfo f = new FileInfo(path);
+            string filename = f.Name;
+            string fileExt = f.Extension;
+            string destDir = path.Replace(filename, "");
+
+            int i = 1;
+            while (File.Exists(path))
+            {
+                path = destDir + filename.Replace(fileExt, "") + " - Copy " + i + fileExt;
+                i++;
+            }
+            return path;
+        }
     }
 }
