@@ -74,9 +74,10 @@ namespace BTD_Backend.Web
         /// </summary>
         public void HandleUpdates(bool hasUpdater = true, bool closeProgram = true)
         {
-            if (hasUpdater)
-                DeleteUpdater();    //delete updater if found to keep directory clean and prevent using old updater
+            /*if (hasUpdater)   //commented our for now
+                DeleteUpdater();*/    //delete updater if found to keep directory clean and prevent using old updater
 
+            
             GetGitApiText();
             if (String.IsNullOrEmpty(AquiredGitApiText))
             {
@@ -84,17 +85,25 @@ namespace BTD_Backend.Web
                 return;
             }
 
-            /*if (!IsUpdate())
-                return;*/
+            if (!IsUpdate())
+            {
+                Log.Output(ProjectName + " is up to date!");
+                return;
+            }
 
-            Log.Output("An update is available for " + ProjectName + ". Downloading latest version...");
+            Log.Output("An update is available for " + ProjectName + ". Downloading latest version...", OutputType.Both);
             DownloadUpdates();
             ExtractUpdater();
 
+            
             if (closeProgram)
-                Log.Output("Closing " + ProjectName + "...");
+                Log.Output("Closing " + ProjectName + "...", OutputType.Both);
+                
             if (hasUpdater)
                 LaunchUpdater();
+
+            if (closeProgram)
+                Environment.Exit(0);
         }
 
         /// <summary>
@@ -156,7 +165,6 @@ namespace BTD_Backend.Web
         /// <returns>an int of the latest release version, as a whole number without decimals</returns>
         public static string GetLatestVersion(string aquiredGitText)
         {
-            MessageBox.Show(aquiredGitText);
             var gitApi = GitApi.FromJson(aquiredGitText);
             string latestRelease = gitApi[0].TagName;
 
@@ -232,7 +240,8 @@ namespace BTD_Backend.Web
                 return;
             }
 
-            Process.Start(updater);
+            Process.Start(updater, "launched_from_"+ ProjectName);
+            //Process.Start(updater);
         }
 
         /// <summary>

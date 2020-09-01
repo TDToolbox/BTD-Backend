@@ -8,10 +8,11 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BTD_Backend</RootNamespace>
     <AssemblyName>BTD Backend</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -90,6 +91,7 @@
     <PostBuildEvent>copy "$(TargetDir)BTD Backend.dll" "E:\Users\Mrclone2\Source\Repos\BTDToolbox.Wpf\BTDToolbox.Wpf\bin\Debug\" /y
 copy "$(TargetDir)BTD Backend.dll" "E:\Users\Mrclone2\Documents\GitHub\Workbench\Workbench\Workbench\bin\Debug\" /y
 copy "$(TargetDir)BTD Backend.dll" "E:\Users\Mrclone2\Documents\GitHub\Workbench\Workbench\Workbench\" /y
-copy "$(TargetDir)BTD Backend.dll" "E:\Users\Mrclone2\Documents\GitHub\TD-Loader\" /y</PostBuildEvent>
+copy "$(TargetDir)BTD Backend.dll" "E:\Users\Mrclone2\Documents\GitHub\TD-Loader\" /y
+copy "$(TargetDir)BTD Backend.dll" "E:\Users\Mrclone2\Source\Repos\BTD6 Mod Manager\BTD6 Mod Manager.wpf" /y</PostBuildEvent>
   </PropertyGroup>
 </Project>

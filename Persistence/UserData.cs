@@ -111,11 +111,11 @@ namespace BTD_Backend.Persistence
         #region Constructors
         public UserData()
         {
-            if (!Guard.IsStringValid(MainProgramName))
+            /*if (!Guard.IsStringValid(MainProgramName))
                 throw new MainProgramNameNotSet();
 
             if (!Guard.IsStringValid(MainProgramExePath))
-                throw new MainProgramExePathNotSet();
+                throw new MainProgramExePathNotSet();*/
 
             if (!Guard.IsStringValid(MainSettingsDir))
                 MainSettingsDir = Environment.CurrentDirectory;
@@ -158,17 +158,26 @@ namespace BTD_Backend.Persistence
             if (Instance == null)
                 Instance = new UserData();
 
+            var user = new UserData();
+
             if (!File.Exists(UserDataFilePath))
+            {
+                user.OnUserDataLoaded(new UserDataEventArgs());
                 return Instance;
+            }
 
             string json = File.ReadAllText(UserDataFilePath);
             if (json == "null" || !Guard.IsJsonValid(json))
             {
                 Log.Output("Userdata has invalid json, generating a new one.");
-                return Instance = new UserData();
+                Instance = new UserData();
+                user.OnUserDataLoaded(new UserDataEventArgs());
+                return Instance;
             }
-            
-            return Instance = JsonConvert.DeserializeObject<UserData>(json);
+
+            Instance = JsonConvert.DeserializeObject<UserData>(json);
+            user.OnUserDataLoaded(new UserDataEventArgs());
+            return Instance;
         }
 
         /// <summary>
@@ -186,7 +195,32 @@ namespace BTD_Backend.Persistence
             serialize.Close();
         }
 
-        #region Exceptions
+        #region Events
+        public static event EventHandler<UserDataEventArgs> UserDataLoaded;
+
+
+        /// <summary>
+        /// Events related to JetPasswords
+        /// </summary>
+        public class UserDataEventArgs : EventArgs
+        {
+
+        }
+
+        /// <summary>
+        /// Fired when the password list was successfully aquired. Passes password list as arg
+        /// </summary>
+        /// <param name="e">JetPasswordEvetnArgs takes the aquired password list as an argument</param>
+        public void OnUserDataLoaded(UserDataEventArgs e)
+        {
+            EventHandler<UserDataEventArgs> handler = UserDataLoaded;
+            if (handler != null)
+                handler(this, e);
+        }
+
+        #endregion
+
+        /*#region Exceptions
         /// <summary>
         /// Throw exception if developer forgot to set the MainProgramName property.
         /// The property needs to be set so userdata can be saved correctly
@@ -218,6 +252,6 @@ namespace BTD_Backend.Persistence
                 }
             }
         }
-        #endregion
+        #endregion*/
     }
 }

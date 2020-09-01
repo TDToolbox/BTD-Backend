@@ -132,6 +132,7 @@ namespace BTD_Backend
         /// </summary>
         private void RunThread(bool nullifyThreadInst = false)
         {
+            ThreadQueue.Peek().IsBackground = true;
             ThreadQueue.Peek().Start();
             runningThreads++;
 

@@ -18,6 +18,7 @@ namespace BTD_Backend.Web
         public static string ReadText_FromURL(string url)
         {
             WebClient client = new WebClient();
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             client.Headers.Add("user-agent", " Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
 
             string result = "";
@@ -26,12 +27,12 @@ namespace BTD_Backend.Web
                 try
                 {
                     result = client.DownloadString(url);
-                    if (!Guard.IsStringValid(result))
+                    if (String.IsNullOrEmpty(result))
                         continue;
 
                     break;
                 }
-                catch { Thread.Sleep(100); }
+                catch(Exception e) { Log.Output(e.Message); }// Thread.Sleep(100); }
             }
             return result;
         }

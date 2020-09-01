@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace BTD_Backend.Natives
 {
@@ -14,7 +15,31 @@ namespace BTD_Backend.Natives
         public static void InjectDll(String strDllName, Process procToInject)
         {
             IntPtr bytesout;
-
+            
+            try
+            {
+                var test = procToInject.Modules;
+                if (test == null)
+                    return;
+            }
+            catch (Exception e) 
+            { 
+                if (e.Message.ToLower().Contains("access"))
+                {
+                    Log.Output("An exception prevented the mods from being injected... \nException: " + e.Message, OutputType.Both);
+                    Log.Output("Try re-opening the prgram as Admin", OutputType.Both);
+                    return;
+                }
+                if (e.Message.ToLower().Contains("readprocess") || e.Message.ToLower().Contains("writeprocess"))
+                {
+                    Log.Output("An exception prevented the mods from being injected... \nException: " + e.Message, OutputType.Both);
+                    Log.Output("Your virus protection might be preventing the injection from working. Try adding an exeption to" +
+                        " the program, or disable your virus protection while using the program.", OutputType.Both);
+                    return;
+                }
+                Log.Output("An exception prevented the mods from being injected... \nException: " + e.Message, OutputType.Both);
+                return;
+            }
             foreach (ProcessModule pm in procToInject.Modules)
             {
                 if (pm.ModuleName.StartsWith("inject", StringComparison.InvariantCultureIgnoreCase))

@@ -2,6 +2,13 @@
 
 namespace BTD_Backend
 {
+    public enum OutputType
+    {
+        Console,
+        MsgBox,
+        Both
+    }
+
     public class Log
     {
         #region Properties
@@ -28,7 +35,7 @@ namespace BTD_Backend
         public class LogEvents : EventArgs
         {
             public string Message { get; set; }
-            public bool UseMsgBox { get; set; }
+            public OutputType Output { get; set; }
         }
 
         /// <summary>
@@ -49,10 +56,10 @@ namespace BTD_Backend
         /// Passes message to OnMessageLogged for Event Handling.
         /// </summary>
         /// <param name="text">Message to output to user</param>
-        public static void Output(string text, bool useMsgBox = false)
+        public static void Output(string text, OutputType output = OutputType.Console)
         {
             LogEvents args = new LogEvents();
-            args.UseMsgBox = useMsgBox;
+            args.Output = output;
             args.Message = ">> " + text + Environment.NewLine;
             Instance.OnMessageLogged(args);
         }
