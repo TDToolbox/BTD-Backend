@@ -2,6 +2,9 @@
 
 namespace BTD_Backend
 {
+    /// <summary>
+    /// Which medium do you want the message to output to?
+    /// </summary>
     public enum OutputType
     {
         Console,
