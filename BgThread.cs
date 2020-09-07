@@ -108,7 +108,7 @@ namespace BTD_Backend
                 AddToQueue(thread, threadType, join);
         }
 
-        public static void AddToFrontOfQueue(funcDelegate func) => AddToFrontOfQueue(new Thread(() => func()));
+        /*public static void AddToFrontOfQueue(funcDelegate func) => AddToFrontOfQueue(new Thread(() => func()));
 
         public static void AddToFrontOfQueue(Thread thread)
         {
@@ -123,7 +123,7 @@ namespace BTD_Backend
 
             foreach (var tempT in tempQueue)
                 AddToFrontThreadQueue.Enqueue(tempT);
-        }
+        }*/
 
 
         int runningThreads = 0;
