@@ -1,4 +1,5 @@
 ﻿using BTD_Backend.Game.Jet_Files;
+using BTD_Backend.Persistence;
 using Ionic.Zip;
 using System;
 using System.Collections.Generic;
@@ -47,7 +48,10 @@ namespace BTD_Backend.IO
             { 
                 password = value;
                 if (Archive != null)
+                {
                     Archive.Password = value;
+                    Archive.Encryption = EncryptionAlgorithm.PkzipWeak;
+                }
             }
         }
 
@@ -67,7 +71,6 @@ namespace BTD_Backend.IO
         public Zip()
         {
             this.Archive = new ZipFile();
-            this.Archive.Encryption = EncryptionAlgorithm.PkzipWeak;
             this.Archive.CompressionLevel = Ionic.Zlib.CompressionLevel.BestSpeed;
         }
 
@@ -82,9 +85,21 @@ namespace BTD_Backend.IO
             this.Password = password;
 
             this.Archive = new ZipFile(path);
-            this.Archive.Encryption = EncryptionAlgorithm.PkzipWeak;
             this.Archive.CompressionLevel = Ionic.Zlib.CompressionLevel.BestSpeed;
-            this.Archive.Password = password;
+            
+            if (!String.IsNullOrEmpty(password))
+            {
+                this.Archive.Password = password;
+                this.Archive.Encryption = EncryptionAlgorithm.PkzipWeak;
+            }
+        }
+
+        public Zip(string path, bool autoDiscoverPass, string password = "") : this(path, password)
+        {
+            if (autoDiscoverPass)
+            {
+                Password = TryGetPassword();
+            }
         }
         #endregion
 
@@ -151,16 +166,7 @@ namespace BTD_Backend.IO
             string[] currentFolderSplit = baseDirectory.TrimEnd('/').Split('/');
             foreach (var file in zipFile.Entries)
             {
-                if (entryType == EntryType.Directories)
-                    if (!file.IsDirectory)
-                        continue;
-
-                if (entryType == EntryType.Files)
-                    if (file.IsDirectory)
-                        continue;
-
-                string item = file.FileName;
-                item = item.TrimEnd('/');
+                string item = file.FileName.TrimEnd('/');
                 string[] itemSplit = item.Split('/');
 
                 
@@ -172,12 +178,39 @@ namespace BTD_Backend.IO
                 if (!item.Contains(currentFolderSplit[currentFolderSplit.Length - 1]))
                     continue;
 
+
                 if (String.IsNullOrEmpty(baseDirectory))
                 {
                     if (itemSplit.Length - 1 > 1)
                         continue;
 
                     item = itemSplit[itemSplit.Length - 2];
+                }
+
+                if (entries.Contains(item))
+                    continue;
+
+                if (entryType == EntryType.Directories)
+                {
+                    if (ProjectData.Instance.TargetGame == Game.GameType.BTD6)
+                    {
+                        if (item.ToLower().EndsWith(".json"))
+                            continue;
+                    }
+                    else if (item.ToLower().EndsWith(".json") || !file.IsDirectory)
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (ProjectData.Instance.TargetGame == Game.GameType.BTD6)
+                    {
+                        if (!item.ToLower().EndsWith(".json"))
+                            continue;
+                    }
+                    else if (file.IsDirectory)
+                        continue;
                 }
 
                 entries.Add(item);
@@ -257,14 +290,15 @@ namespace BTD_Backend.IO
         /// <returns>Whether or not the password is correct for the zip</returns>
         public static bool IsPasswordCorrect(ZipFile zip, string password)
         {
-            if (!Guard.IsStringValid(password))
-                return false;
+            /*if (!Guard.IsStringValid(password))
+                return false;*/
 
             string tempDir = Environment.CurrentDirectory + "\\Temp";
             if (!Directory.Exists(tempDir))
                 Directory.CreateDirectory(tempDir);
 
-            zip.Password = password;
+            if (!String.IsNullOrEmpty(password))
+                zip.Password = password;
 
             int i = 0;
             bool result = false;
@@ -272,6 +306,9 @@ namespace BTD_Backend.IO
             {
                 try
                 {
+                    /*if (file.IsDirectory)
+                        continue;*/
+
                     file.Extract(tempDir, ExtractExistingFileAction.OverwriteSilently);
                     if (i > 1)
                     {

@@ -224,7 +224,7 @@ namespace BTD_Backend.Game
             }
 
             if (IsGameRunning(gameType))
-                Windows.KillProcess(GameInfo.GetGame(gameType).ProcName);
+                Utility.KillProcess(GameInfo.GetGame(gameType).ProcName);
 
             var appID = steamGames_appID_fromGame[gameType];
             Process.Start("steam://validate/" + appID);

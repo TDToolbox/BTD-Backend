@@ -1,17 +1,45 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media.Imaging;
 
 namespace BTD_Backend.Natives
 {
     /// <summary>
     /// Contains Windows related methods, like terminate a process
     /// </summary>
-    public class Windows
+    public class Utility
     {
+        /// <summary>
+        /// Takes the full name of a resource and loads it in to a stream.
+        /// </summary>
+        /// <param name="resourceName">Assuming an embedded resource is a file
+        /// called info.png and is located in a folder called Resources, it
+        /// will be compiled in to the assembly with this fully qualified
+        /// name: Full.Assembly.Name.Resources.info.png. That is the string
+        /// that you should pass to this method.</param>
+        /// <returns></returns>
+        public static Stream GetEmbeddedResourceStream(string resourceName)
+        {
+            return System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
+        }
+
+        public static BitmapSource Bitmap2BitmapSource(Bitmap bitmap)
+        {
+            BitmapSource i = Imaging.CreateBitmapSourceFromHBitmap(
+                           bitmap.GetHbitmap(),
+                           IntPtr.Zero,
+                           Int32Rect.Empty,
+                           BitmapSizeOptions.FromEmptyOptions());
+            return i;
+        }
+
         /// <summary>
         /// Run a command with command prompt
         /// </summary>
@@ -86,12 +114,12 @@ namespace BTD_Backend.Natives
         {
             if (process == null)
             {
-                new Windows().OnFailedToCloseProc(args);
+                new Utility().OnFailedToCloseProc(args);
                 return;
             }
 
             process.Kill();
-            new Windows().OnProcessClosed(args);
+            new Utility().OnProcessClosed(args);
         }
 
         /// <summary>

@@ -11,6 +11,8 @@ namespace BTD_Backend.IO
 {
     public class Wbp : Zip
     {
+
+        #region Constructors
         public Wbp() : base()
         {
 
@@ -23,6 +25,8 @@ namespace BTD_Backend.IO
         {
 
         }
+        #endregion
+
         public ProjectData getProjectData()
         {
             try
@@ -38,7 +42,7 @@ namespace BTD_Backend.IO
         {
             this.Archive.RemoveEntry("meta.json");
             string json = JsonConvert.SerializeObject(metaData);
-            MessageBox.Show(json);
+            //MessageBox.Show(json);
             this.Archive.AddEntry("meta.json", json);
         }
     }

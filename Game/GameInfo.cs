@@ -66,6 +66,11 @@ namespace BTD_Backend.Game
         public string JetPassword { get; set; }
 
         /// <summary>
+        /// The exact path to the jet file
+        /// </summary>
+        public string JetPath { get; set; }
+
+        /// <summary>
         /// The SteamApp ID for this game
         /// </summary>
         public ulong SteamID { get; set; }
@@ -100,6 +105,7 @@ namespace BTD_Backend.Game
                 ProcName = "BTD5-Win",
                 JetName = "BTD5.jet",
                 JetPassword = "Q%_{6#Px]]",
+                JetPath = GameDir + "\\Assets\\" + JetName,
                 SteamID = SteamUtils.GetGameID(GameType.BTD5)
             };
 
@@ -112,6 +118,7 @@ namespace BTD_Backend.Game
                 ProcName = "Battles-Win",
                 JetName = "data.jet",
                 JetPassword = "",
+                JetPath = GameDir + "\\Assets\\" + JetName,
                 SteamID = SteamUtils.GetGameID(GameType.BTDB)
             };
 
@@ -124,6 +131,7 @@ namespace BTD_Backend.Game
                 ProcName = "MonkeyCity-Win",
                 JetName = "data.jet",
                 JetPassword = "Q%_{6#Px]]",
+                JetPath = GameDir + "\\Assets\\" + JetName,
                 SteamID = SteamUtils.GetGameID(GameType.BMC)
             };
 
@@ -134,7 +142,7 @@ namespace BTD_Backend.Game
                 GameDir = SteamUtils.GetGameDir(GameType.BTD6),
                 SaveDir = "",
                 ProcName = "BloonsTD6",
-                JetName = "",
+                JetName = "BTD6.jet",
                 JetPassword = "",
                 SteamID = SteamUtils.GetGameID(GameType.BTD6)
             };
@@ -164,6 +172,19 @@ namespace BTD_Backend.Game
             };
 
             games = new List<GameInfo>() { btd5, btdb, bmc, btd6, btdat, nkArchive };
+
+            foreach (var item in games)
+            {
+                item.JetPath = item.GameDir;
+
+                if (item.Type == GameType.BTD6 || item.Type == GameType.BTDAT)
+                    item.JetPath += "\\" + item.JetName;
+                else if (item.Type == GameType.BTD5 || item.Type == GameType.BTDB || item.Type == GameType.BMC)
+                    item.JetPath += "\\Assets\\" + item.JetName;
+                else
+                    continue;
+
+            }
         }
     }
 }

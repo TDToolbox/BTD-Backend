@@ -31,6 +31,7 @@ namespace BTD_Backend.Game.Jet_Files
         {
             Log.Output("Getting password list...");
             JetPassword jet = new JetPassword();
+            
 
             List<string> passwords = new List<string>();
             if (!jet.PasswordsFileExist() || redownload)

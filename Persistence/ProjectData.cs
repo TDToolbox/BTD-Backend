@@ -1,4 +1,5 @@
-﻿using BTD_Backend.IO;
+﻿using BTD_Backend.Game;
+using BTD_Backend.IO;
 using Ionic.Zip;
 using Newtonsoft.Json;
 using System;
@@ -27,13 +28,14 @@ namespace BTD_Backend.Persistence
             }
             set { instance = value; }
         }
+
         public bool IsJet { get; set; }
         public bool IsSave { get; set; }
         public bool IsNKH { get; set; }
         public string ProjectName { get; set; }
         public string WBP_Path { get; set; }
         public DateTime LastOpened { get; set; } = DateTime.Now;
-        public string TargetGame { get; set; }
+        public GameType TargetGame { get; set; }
         public string TargetVersion { get; set; }
         public string JetPassword { get; set; } = "Q%_{6#Px]]";
 
@@ -84,7 +86,7 @@ namespace BTD_Backend.Persistence
             this.IsSave = IsSave;
             this.IsNKH = IsNKH;
         }
-        public ProjectData(string projName, string wbp_path, DateTime lastOpened, bool IsJet, bool IsSave, bool IsNKH, string TargetGame)
+        public ProjectData(string projName, string wbp_path, DateTime lastOpened, bool IsJet, bool IsSave, bool IsNKH, GameType TargetGame)
         {
             ProjectName = projName;
             WBP_Path = wbp_path;
@@ -94,7 +96,7 @@ namespace BTD_Backend.Persistence
             this.IsNKH = IsNKH;
             this.TargetGame = TargetGame;
         }
-        public ProjectData(string projName, string wbp_path, DateTime lastOpened, bool IsJet, bool IsSave, bool IsNKH, string TargetGame, string TargetVersion)
+        public ProjectData(string projName, string wbp_path, DateTime lastOpened, bool IsJet, bool IsSave, bool IsNKH, GameType TargetGame, string TargetVersion)
         {
             ProjectName = projName;
             WBP_Path = wbp_path;
@@ -105,7 +107,7 @@ namespace BTD_Backend.Persistence
             this.TargetGame = TargetGame;
             this.TargetVersion = TargetVersion;
         }
-        public ProjectData(string projName, string wbp_path, DateTime lastOpened, bool IsJet, bool IsSave, bool IsNKH, string TargetGame, string TargetVersion, string JetPassword)
+        public ProjectData(string projName, string wbp_path, DateTime lastOpened, bool IsJet, bool IsSave, bool IsNKH, GameType TargetGame, string TargetVersion, string JetPassword)
         {
             ProjectName = projName;
             WBP_Path = wbp_path;

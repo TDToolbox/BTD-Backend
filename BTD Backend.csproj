@@ -52,8 +52,13 @@
     <Compile Include="Game\Jet Files\JetPasswords.cs" />
     <Compile Include="Natives\ProcType.cs" />
     <Compile Include="IO\Wbp.cs" />
-    <Compile Include="Natives\Windows.cs" />
+    <Compile Include="Natives\Utility.cs" />
     <Compile Include="Natives\Win32.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="TreeView_Handling.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="NKHook5\NKHook5Manager.cs" />
@@ -78,6 +83,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Web.Extensions" />
@@ -85,6 +91,15 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Mod Updater\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder icon 1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

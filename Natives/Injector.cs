@@ -40,6 +40,8 @@ namespace BTD_Backend.Natives
                 Log.Output("An exception prevented the mods from being injected... \nException: " + e.Message, OutputType.Both);
                 return;
             }
+
+
             foreach (ProcessModule pm in procToInject.Modules)
             {
                 if (pm.ModuleName.StartsWith("inject", StringComparison.InvariantCultureIgnoreCase))

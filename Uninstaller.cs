@@ -23,11 +23,11 @@ namespace BTD_Backend
                     Directory.Delete(UserData.MainSettingsDir, true);
             }
 
-            Windows.DeleteDirCMD(Environment.CurrentDirectory);
+            Utility.DeleteDirCMD(Environment.CurrentDirectory);
 
             var filename = new FileInfo(UserData.MainProgramExePath);
-            if (Windows.IsProgramRunning(filename, out Process proc))
-                Windows.KillProcess(filename);
+            if (Utility.IsProgramRunning(filename, out Process proc))
+                Utility.KillProcess(filename);
         }
     }
 }
