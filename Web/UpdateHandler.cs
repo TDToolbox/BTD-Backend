@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BTD_Backend.IO;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,6 +14,16 @@ namespace BTD_Backend.Web
     public class UpdateHandler
     {
         #region Properties
+        /// <summary>
+        /// Should the downloaded zip file be deleted after extraction?
+        /// </summary>
+        public bool DeleteDownloadZip { get; set; }
+
+        /// <summary>
+        /// If you only want to download some of the files from git, put indexes of files in list. Starts at 0
+        /// </summary>
+        public List<int> GitFileIndexsToDownload { get; set; }
+
         /// <summary>
         /// The url to the githubApi releases page, which contains info about the releases
         /// </summary>
@@ -72,12 +83,18 @@ namespace BTD_Backend.Web
         /// <summary>
         /// Main updater method. Handles all update related functions for ease of use.
         /// </summary>
-        public void HandleUpdates(bool hasUpdater = true, bool closeProgram = true)
+        public void HandleUpdates(bool hasUpdater = true, bool closeProgram = true, bool deleteDownloadZip = false)
         {
             /*if (hasUpdater)   //commented our for now
                 DeleteUpdater();*/    //delete updater if found to keep directory clean and prevent using old updater
+            if (String.IsNullOrEmpty(GitApiReleasesURL))
+            {
+                Log.Output("Can't get updates for " + ProjectName + " because the download URL has not been set.");
+                return;
+            }
 
-            
+            DeleteDownloadZip = deleteDownloadZip;
+
             GetGitApiText();
             if (String.IsNullOrEmpty(AquiredGitApiText))
             {
@@ -91,7 +108,14 @@ namespace BTD_Backend.Web
                 return;
             }
 
-            Log.Output("An update is available for " + ProjectName + ". Downloading latest version...", OutputType.Both);
+            var result = MessageBox.Show("An update is available for " + ProjectName + ". Would you like to download the update?", "Download update?", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.No)
+            {
+                Log.Output("You chose not to install updates.");
+                return;
+            }
+
+            Log.Output("Downloading latest version...");
             DownloadUpdates();
             ExtractUpdater();
 
@@ -104,6 +128,8 @@ namespace BTD_Backend.Web
 
             if (closeProgram)
                 Environment.Exit(0);
+
+            Log.Output("Finished updating " + ProjectName + "!");
         }
 
         /// <summary>
@@ -131,25 +157,39 @@ namespace BTD_Backend.Web
         /// <returns></returns>
         public static bool IsUpdate(string exeToCheck, string projectName, string aquiredGitText)
         {
-            string latestVersion = GetLatestVersion(aquiredGitText);
-            bool isLatestValid = Int32.TryParse(latestVersion.Replace(".", ""), out var isLValid);
-            if (!isLatestValid)
+            if (!File.Exists(exeToCheck))
             {
-                Log.Output("The version number for " + projectName + " on githubAPI releases is invalid. Please" +
-                    " make sure the verson number is only numbers and decimals, and doesn't contain any letters");
-                return false;
+                Log.Output(projectName + " files not found, need to redownload it.");
+                return true;
             }
 
-            string currentVersion = FileVersionInfo.GetVersionInfo(exeToCheck).FileVersion;
-            bool isCurrentValid = Int32.TryParse(currentVersion.Replace(".", ""), out var isCValid);
-            if (!isCurrentValid)
+            string latestVersion_unparsed = GetLatestVersion(aquiredGitText).Replace(".", "");
+            string latestVersion_parsed = "";
+            foreach (var item in latestVersion_unparsed)
             {
-                Log.Output("The version number for " + projectName + "'s .EXE file is invalid. Please" +
-                    " make sure the verson number is only numbers and decimals, and doesn't contain any letters");
-                return false;
+                if(Int32.TryParse(item.ToString(), out var isValid))
+                    latestVersion_parsed += item;
             }
 
-            return Version.Parse(latestVersion) > Version.Parse(currentVersion);
+            string currentVersion_unparsed = FileVersionInfo.GetVersionInfo(exeToCheck).FileVersion.Replace(".", "");
+            string currentVersion_parsed = "";
+            foreach (var item in currentVersion_unparsed)
+            {
+                if (Int32.TryParse(item.ToString(), out var isValid))
+                    currentVersion_parsed += item;
+            }
+
+            while (currentVersion_parsed.Length != latestVersion_parsed.Length)
+            {
+                if (currentVersion_parsed.Length < latestVersion_parsed.Length)
+                    currentVersion_parsed += "0";
+                if (latestVersion_parsed.Length < currentVersion_parsed.Length)
+                    latestVersion_parsed += "0";
+            }
+
+            Int32.TryParse(latestVersion_parsed, out int l);
+            Int32.TryParse(currentVersion_parsed, out int c);
+            return l > c;
         }
 
         /// <summary>
@@ -177,11 +217,19 @@ namespace BTD_Backend.Web
         /// <returns>a list of download url strings</returns>
         private List<string> GetDownloadURLs()
         {
+            int i = -1;
             List<string> downloads = new List<string>();
             var gitApi = GitApi.FromJson(AquiredGitApiText);
             foreach (var a in gitApi[0].Assets)
-                downloads.Add(a.BrowserDownloadUrl.ToString());
+            {
+                i++;
+                if (GitFileIndexsToDownload != null && !GitFileIndexsToDownload.Contains(i))
+                    continue;
 
+                Log.Output("Downloading " + a.BrowserDownloadUrl.ToString());
+                downloads.Add(a.BrowserDownloadUrl.ToString());   
+            }
+                
             return downloads;
         }
 
@@ -206,12 +254,27 @@ namespace BTD_Backend.Web
                 if (!file.EndsWith(".zip") && !file.EndsWith(".rar") && !file.EndsWith(".7z"))
                     continue;
 
-                using (ZipArchive archive = System.IO.Compression.ZipFile.OpenRead(file))
+                if (!file.ToLower().Contains(UpdatedZipName.ToLower()))
+                    continue;
+
+                Zip z = new Zip(file);
+                z.Extract(InstallDirectory, Ionic.Zip.ExtractExistingFileAction.OverwriteSilently);
+                
+                /*Zip z = new Zip(file);
+                z.Extract(InstallDirectory, Ionic.Zip.ExtractExistingFileAction.OverwriteSilently);
+
+                if (DeleteDownloadZip)
+                {
+                    if (File.Exists(InstallDirectory + "\\" + UpdatedZipName))
+                        File.Delete(InstallDirectory + "\\" + UpdatedZipName);
+                }*/
+                /*using (ZipArchive archive = System.IO.Compression.ZipFile.OpenRead(file))
                 {
                     foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-                        if (!entry.FullName.ToLower().Contains("update"))
-                            continue;
+                        //if (!entry.FullName.ToLower().Contains("update"))
+                        *//*if (!entry.FullName.ToLower().Contains(UpdatedZipName))
+                            continue;*//*
 
                         string destinationPath = Path.GetFullPath(Path.Combine(InstallDirectory, entry.FullName));
                         if (destinationPath.StartsWith(InstallDirectory, StringComparison.Ordinal))
@@ -219,10 +282,10 @@ namespace BTD_Backend.Web
                             if (File.Exists(destinationPath))
                                 File.Delete(destinationPath);
 
-                            entry.ExtractToFile(destinationPath);
+                            entry.ExtractToFile(destinationPath, true);
                         }
                     }
-                }
+                }*/
             }
         }
 
@@ -247,12 +310,12 @@ namespace BTD_Backend.Web
         /// <summary>
         /// Delete all files related to updater. Used to keep program directory clean
         /// </summary>
-        private void DeleteUpdater()
+        public void DeleteUpdater()
         {
-            if (File.Exists(Environment.CurrentDirectory + "\\" + UpdaterExeName))
-                File.Delete(Environment.CurrentDirectory + "\\" + UpdaterExeName);
+            if (File.Exists(InstallDirectory + "\\" + UpdaterExeName))
+                File.Delete(InstallDirectory + "\\" + UpdaterExeName);
 
-            var files = Directory.GetFiles(Environment.CurrentDirectory);
+            var files = Directory.GetFiles(InstallDirectory);
             foreach (var file in files)
             {
                 FileInfo f = new FileInfo(file);
